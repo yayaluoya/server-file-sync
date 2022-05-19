@@ -4,6 +4,12 @@
 export interface IConfig {
     /** 配置名字 */
     name: string;
+    /** 主机地址 */
+    host: string,
+    /** 端口号 */
+    port: number,
+    /** 用户名 */
+    username: string,
     /** 私钥密码 */
     passphrase: string;
     /** 私钥字符串 */
