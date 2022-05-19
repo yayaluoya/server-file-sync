@@ -1,0 +1,35 @@
+{
+  "name": "server-file-sync",
+  "version": "1.0.0",
+  "description": "把本地文件夹下的文件同步到服务器指定目录下，方便前端更新代码",
+  "main": "index.js",
+  "bin": {
+    "server-file-sync": "./dist/__bin/index.js",
+    "sfs": "./dist/__bin/index.js"
+  },
+  "scripts": {
+    "tsc-w": "tsc -w",
+    "npm-publish": "npm publish",
+    "test": "cd ./test & node ../dist/__bin/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yayaluoya/server-file-sync.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yayaluoya/server-file-sync/issues"
+  },
+  "homepage": "https://github.com/yayaluoya/server-file-sync#readme",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "chokidar": "^3.5.3",
+    "commander": "^9.2.0",
+    "ssh2": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.34",
+    "@types/ssh2": "^0.5.52"
+  }
+}
