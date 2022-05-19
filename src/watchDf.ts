@@ -4,28 +4,32 @@ import path from "path";
 import chalk from "chalk";
 import { getComPath } from "./utils/getComPath";
 import moment from "moment";
+import { Manager } from "./Manager";
 
 /**
  * 同步目录和文件
- * @param sftp 操作句柄
+ * @param key 唯一键值
  * @param localDir 本地目录
  * @param remoteDir 远程目录
  */
-export async function watchDf(sftp: SFTPWrapper, localDir: string, remoteDir: string) {
+export async function watchDf(key: string, localDir: string, remoteDir: string) {
     chokidar.watch(localDir).on('all', async (event, _path) => {
         if (event == 'add' || event == 'change') {
             let relativePath = path.relative(localDir, _path);
             //转成通用平台的路径分隔符
             let onRemotePath = path.join(remoteDir, relativePath);
             //创建目录
-            await mkDir(sftp, remoteDir, path.dirname(relativePath));
+            await mkDir(Manager.sftp, remoteDir, path.dirname(relativePath));
             //同步
-            sftp.fastPut(_path, getComPath(onRemotePath), (err) => {
+            Manager.sftp.fastPut(_path, getComPath(onRemotePath), (err) => {
                 if (err) {
                     console.log(chalk.red('同步失败!', _path, onRemotePath));
                     return;
                 }
-                console.log(chalk.gray('同步'), _path, chalk.gray('-->'), chalk.green(onRemotePath), chalk.gray(moment().format('HH:mm:ss')));
+                //触发更新回调
+                Manager.mainConfig.updateF?.(Manager.conn, key);
+                //
+                console.log(chalk.gray('同步成功'), _path, chalk.gray('->'), chalk.green(getComPath(onRemotePath)), chalk.gray(moment().format('HH:mm:ss')));
             });
         }
     });

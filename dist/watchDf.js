@@ -54,13 +54,14 @@ var path_1 = __importDefault(require("path"));
 var chalk_1 = __importDefault(require("chalk"));
 var getComPath_1 = require("./utils/getComPath");
 var moment_1 = __importDefault(require("moment"));
+var Manager_1 = require("./Manager");
 /**
  * 同步目录和文件
- * @param sftp 操作句柄
+ * @param key 唯一键值
  * @param localDir 本地目录
  * @param remoteDir 远程目录
  */
-function watchDf(sftp, localDir, remoteDir) {
+function watchDf(key, localDir, remoteDir) {
     return __awaiter(this, void 0, void 0, function () {
         var _this = this;
         return __generator(this, function (_a) {
@@ -73,17 +74,21 @@ function watchDf(sftp, localDir, remoteDir) {
                             relativePath = path_1.default.relative(localDir, _path);
                             onRemotePath_1 = path_1.default.join(remoteDir, relativePath);
                             //创建目录
-                            return [4 /*yield*/, mkDir(sftp, remoteDir, path_1.default.dirname(relativePath))];
+                            return [4 /*yield*/, mkDir(Manager_1.Manager.sftp, remoteDir, path_1.default.dirname(relativePath))];
                         case 1:
                             //创建目录
                             _a.sent();
                             //同步
-                            sftp.fastPut(_path, (0, getComPath_1.getComPath)(onRemotePath_1), function (err) {
+                            Manager_1.Manager.sftp.fastPut(_path, (0, getComPath_1.getComPath)(onRemotePath_1), function (err) {
+                                var _a, _b;
                                 if (err) {
                                     console.log(chalk_1.default.red('同步失败!', _path, onRemotePath_1));
                                     return;
                                 }
-                                console.log(chalk_1.default.gray('同步'), _path, chalk_1.default.gray('-->'), chalk_1.default.green(onRemotePath_1), chalk_1.default.gray((0, moment_1.default)().format('HH:mm:ss')));
+                                //触发更新回调
+                                (_b = (_a = Manager_1.Manager.mainConfig).updateF) === null || _b === void 0 ? void 0 : _b.call(_a, Manager_1.Manager.conn, key);
+                                //
+                                console.log(chalk_1.default.gray('同步成功'), _path, chalk_1.default.gray('->'), chalk_1.default.green((0, getComPath_1.getComPath)(onRemotePath_1)), chalk_1.default.gray((0, moment_1.default)().format('HH:mm:ss')));
                             });
                             _a.label = 2;
                         case 2: return [2 /*return*/];

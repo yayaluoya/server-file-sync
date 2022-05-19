@@ -19,3 +19,39 @@ sfs -h 查看所有命令和使用方式
 
 #### 注意事项
 - 最好在项目中把密钥从版本控制系统中忽略，防止被人连接到这台服务器造成无法控制的影响
+
+#### 配置文件格式
+``` ts
+/**
+ * 配置文件类型
+ */
+export interface IConfig {
+    /** 配置名字 */
+    name: string;
+    /** 主机地址 */
+    host: string,
+    /** 端口号 */
+    port: number,
+    /** 用户名 */
+    username: string,
+    /** 私钥密码 */
+    passphrase: string;
+    /** 私钥字符串 */
+    privateKey: string;
+    /** 同步列表 */
+    syncList: {
+        /** key */
+        key: string;
+        /** 标题 */
+        title: string;
+        /** 本地地址 */
+        local: string;
+        /** 远程地址 */
+        remote: string;
+    }[];
+    /** 是否监听 */
+    watch: boolean;
+    /** 更新回调 */
+    updateF?: (conn: Client, key: string) => Promise<any>;
+}
+```

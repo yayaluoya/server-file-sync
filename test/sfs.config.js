@@ -7,7 +7,7 @@ const { join } = require("path");
 module.exports = {
     name: '自定义配置',
     /** 主机地址 */
-    host: '',
+    host: '47.94.233.236',
     /** 端口号 */
     port: 22,
     /** 用户名 */
@@ -19,6 +19,7 @@ module.exports = {
     /** 同步列表 */
     syncList: [
         {
+            key: 'hh',
             title: 'hh',
             local: './dist',
             remote: '/www/test/sfs-test',
@@ -26,10 +27,15 @@ module.exports = {
     ],
     /** 是否监听 */
     watch: true,
+    async updateF(conn, key) {
+        // console.log('更新', key);
+    }
 }
 
-// /** 同步列表类型 */
+// /** 同步列表 */
 // syncList: {
+//     /** key */
+//     key: string;
 //     /** 标题 */
 //     title: string;
 //     /** 本地地址 */

@@ -3,7 +3,7 @@ import { start } from "..";
 import path from "path";
 import fs from "fs";
 import { Command } from 'commander';
-import { IConfig } from "../config";
+import { IConfig } from "../Manager";
 const packageJSON = require('../../package.json');
 const defaultConfig = require('../../config');
 const program = new Command();

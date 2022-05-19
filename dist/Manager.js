@@ -10,4 +10,4 @@ var Manager = /** @class */ (function () {
     return Manager;
 }());
 exports.Manager = Manager;
-//# sourceMappingURL=config.js.map
+//# sourceMappingURL=Manager.js.map

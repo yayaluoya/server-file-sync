@@ -20,8 +20,10 @@ module.exports = {
     watch: false,
 }
 
-// /** 同步列表类型 */
+// /** 同步列表 */
 // syncList: {
+//     /** key */
+//     key: string;
 //     /** 标题 */
 //     title: string;
 //     /** 本地地址 */

@@ -43,14 +43,14 @@ exports.syncDF = void 0;
 var chalk_1 = __importDefault(require("chalk"));
 var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
+var Manager_1 = require("./Manager");
 var getComPath_1 = require("./utils/getComPath");
 /**
  * 同步目录和文件
- * @param sftp 操作句柄
  * @param localDir 本地目录
  * @param remoteDir 远程目录
  */
-function syncDF(sftp, localDir, remoteDir) {
+function syncDF(localDir, remoteDir) {
     return __awaiter(this, void 0, void 0, function () {
         var stat;
         return __generator(this, function (_a) {
@@ -60,13 +60,13 @@ function syncDF(sftp, localDir, remoteDir) {
                     if (!stat.isFile()) return [3 /*break*/, 2];
                     return [4 /*yield*/, new Promise(function (r, e) {
                             //上传
-                            sftp.fastPut(localDir, (0, getComPath_1.getComPath)(remoteDir), function (err) {
+                            Manager_1.Manager.sftp.fastPut(localDir, (0, getComPath_1.getComPath)(remoteDir), function (err) {
                                 if (err) {
                                     console.log(chalk_1.default.red('上传失败!', localDir, remoteDir));
                                     e();
                                     return;
                                 }
-                                console.log(chalk_1.default.gray('上传'), localDir, chalk_1.default.gray('-->'), chalk_1.default.green(remoteDir));
+                                console.log(chalk_1.default.gray('上传成功'), localDir, chalk_1.default.gray('->'), chalk_1.default.green((0, getComPath_1.getComPath)(remoteDir)));
                                 r();
                             });
                         })];
@@ -77,7 +77,7 @@ function syncDF(sftp, localDir, remoteDir) {
                     if (!stat.isDirectory()) return [3 /*break*/, 5];
                     //创建目录
                     return [4 /*yield*/, new Promise(function (r) {
-                            sftp.mkdir((0, getComPath_1.getComPath)(remoteDir), function () {
+                            Manager_1.Manager.sftp.mkdir((0, getComPath_1.getComPath)(remoteDir), function () {
                                 r();
                             });
                         })];
@@ -86,7 +86,7 @@ function syncDF(sftp, localDir, remoteDir) {
                     _a.sent();
                     //
                     return [4 /*yield*/, Promise.all(fs_1.default.readdirSync(localDir).map(function (o) {
-                            return syncDF(sftp, path_1.default.join(localDir, o), path_1.default.join(remoteDir, o));
+                            return syncDF(path_1.default.join(localDir, o), path_1.default.join(remoteDir, o));
                         }))];
                 case 4:
                     //

@@ -1,3 +1,5 @@
+import { Client, SFTPWrapper } from "ssh2";
+
 /**
  * 配置文件类型
  */
@@ -16,6 +18,8 @@ export interface IConfig {
     privateKey: string;
     /** 同步列表 */
     syncList: {
+        /** key */
+        key: string;
         /** 标题 */
         title: string;
         /** 本地地址 */
@@ -25,12 +29,18 @@ export interface IConfig {
     }[];
     /** 是否监听 */
     watch: boolean;
+    /** 更新回调 */
+    updateF?: (conn: Client, key: string) => Promise<any>;
 }
 
 /**
- * 配置文件
+ * 管理器
  */
-export class Config {
+export class Manager {
     /** 主配置文件 */
     static mainConfig: IConfig;
+    /** 连接句柄 */
+    static conn: Client;
+    /** sftp句柄 */
+    static sftp: SFTPWrapper;
 }
