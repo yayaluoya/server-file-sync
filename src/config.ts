@@ -23,6 +23,8 @@ export interface IConfig {
         /** 远程地址 */
         remote: string;
     }[];
+    /** 是否监听 */
+    watch: boolean;
 }
 
 /**

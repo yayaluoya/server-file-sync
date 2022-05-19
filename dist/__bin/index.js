@@ -13,6 +13,7 @@ var defaultConfig = require('../../config');
 var program = new commander_1.Command();
 var chalk_1 = __importDefault(require("chalk"));
 var ObjectUtils_1 = require("../utils/ObjectUtils");
+var getAbsolute_1 = require("../utils/getAbsolute");
 var cuConfigName = 'sfs.config.js';
 program.option('-v --version')
     .option('-h --help')
@@ -43,7 +44,7 @@ switch (true) {
     case Boolean(opts.debugConfig):
         console.log(chalk_1.default.yellow('配置信息：'));
         if (typeof opts.debugConfig == 'string') {
-            console.log(ObjectUtils_1.ObjectUtils.merge(defaultConfig, getConfig(path_1.default.isAbsolute(opts.debugConfig) ? opts.debugConfig : path_1.default.join(process.cwd(), opts.debugConfig), '查找配置失败!')));
+            console.log(ObjectUtils_1.ObjectUtils.merge(defaultConfig, getConfig((0, getAbsolute_1.getAbsolute)(opts.debugConfig), '查找配置失败!')));
         }
         else {
             console.log(ObjectUtils_1.ObjectUtils.merge(defaultConfig, getCwdConfig()));
@@ -53,7 +54,7 @@ switch (true) {
     default:
         //合并配置
         if (Boolean(opts.config)) {
-            ObjectUtils_1.ObjectUtils.merge(defaultConfig, getConfig(path_1.default.isAbsolute(opts.config) ? opts.config : path_1.default.join(process.cwd(), opts.config), '查找配置失败，将以默认配置运行!'));
+            ObjectUtils_1.ObjectUtils.merge(defaultConfig, getConfig((0, getAbsolute_1.getAbsolute)(opts.config), '查找配置失败，将以默认配置运行!'));
         }
         else {
             ObjectUtils_1.ObjectUtils.merge(defaultConfig, getCwdConfig());

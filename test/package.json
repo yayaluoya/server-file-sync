@@ -1,0 +1,16 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "sfs.config.js",
+  "scripts": {
+    "sfs-i": "sfs -i",
+    "sync": "sfs"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "moment": "^2.29.3",
+    "server-file-sync": "file:.."
+  }
+}

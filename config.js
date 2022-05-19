@@ -16,4 +16,16 @@ module.exports = {
     privateKey: '',
     /** 同步列表 */
     syncList: [],
+    /** 是否监听 */
+    watch: false,
 }
+
+// /** 同步列表类型 */
+// syncList: {
+//     /** 标题 */
+//     title: string;
+//     /** 本地地址 */
+//     local: string;
+//     /** 远程地址 */
+//     remote: string;
+// }[];

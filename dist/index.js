@@ -41,9 +41,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.start = void 0;
 var ssh2_1 = __importDefault(require("ssh2"));
-var fs_1 = __importDefault(require("fs"));
-var path_1 = __importDefault(require("path"));
 var chalk_1 = __importDefault(require("chalk"));
+var syncDF_1 = require("./syncDF");
+var getAbsolute_1 = require("./utils/getAbsolute");
+var watchDf_1 = require("./watchDf");
+var getComPath_1 = require("./utils/getComPath");
 var conn = new ssh2_1.default.Client();
 /**
  * 开始服务
@@ -53,32 +55,49 @@ function start(config) {
     conn.on('ready', function () {
         console.log(chalk_1.default.blue('连接成功...'));
         conn.sftp(function (err, sftp) { return __awaiter(_this, void 0, void 0, function () {
-            var _i, _a, _b, title, local, remote;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var _i, _a, _b, title, local, remote, _c, _d, _e, title, local, remote;
+            return __generator(this, function (_f) {
+                switch (_f.label) {
                     case 0:
                         if (err) {
                             console.log(chalk_1.default.red('启动sftp失败'), err);
                             return [2 /*return*/];
                         }
+                        if (!config.watch) return [3 /*break*/, 5];
                         _i = 0, _a = config.syncList;
-                        _c.label = 1;
+                        _f.label = 1;
                     case 1:
                         if (!(_i < _a.length)) return [3 /*break*/, 4];
                         _b = _a[_i], title = _b.title, local = _b.local, remote = _b.remote;
-                        console.log(chalk_1.default.yellow("\u5F00\u59CB\u540C\u6B65@".concat(title).concat(local, "-->").concat(remote, "\n")));
-                        return [4 /*yield*/, syncDF(sftp, local, remote)];
+                        console.log(chalk_1.default.yellow("\u5F00\u59CB\u76D1\u542C@".concat(title).concat(local, "-->").concat(remote, "\n")));
+                        return [4 /*yield*/, (0, watchDf_1.watchDf)(sftp, (0, getAbsolute_1.getAbsolute)(local), (0, getComPath_1.getComPath)(remote))];
                     case 2:
-                        _c.sent();
-                        _c.label = 3;
+                        _f.sent();
+                        _f.label = 3;
                     case 3:
                         _i++;
                         return [3 /*break*/, 1];
-                    case 4:
+                    case 4: return [3 /*break*/, 10];
+                    case 5:
+                        _c = 0, _d = config.syncList;
+                        _f.label = 6;
+                    case 6:
+                        if (!(_c < _d.length)) return [3 /*break*/, 9];
+                        _e = _d[_c], title = _e.title, local = _e.local, remote = _e.remote;
+                        console.log(chalk_1.default.yellow("\u5F00\u59CB\u540C\u6B65@".concat(title).concat(local, "-->").concat(remote, "\n")));
+                        return [4 /*yield*/, (0, syncDF_1.syncDF)(sftp, (0, getAbsolute_1.getAbsolute)(local), (0, getComPath_1.getComPath)(remote))];
+                    case 7:
+                        _f.sent();
+                        _f.label = 8;
+                    case 8:
+                        _c++;
+                        return [3 /*break*/, 6];
+                    case 9:
                         //关闭连接
                         console.log(chalk_1.default.blue('\n同步完成'));
                         conn.end();
-                        return [2 /*return*/];
+                        _f.label = 10;
+                    case 10: return [2 /*return*/];
                 }
             });
         }); });
@@ -91,61 +110,4 @@ function start(config) {
     });
 }
 exports.start = start;
-/**
- * 同步目录和文件
- * @param sftp 操作句柄
- * @param localDir 本地目录
- * @param remoteDir 远程目录
- * @param _f 是否强制同步
- */
-function syncDF(sftp, localDir, remoteDir, _f) {
-    if (_f === void 0) { _f = false; }
-    return __awaiter(this, void 0, void 0, function () {
-        var stat;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    stat = fs_1.default.statSync(localDir);
-                    if (!stat.isFile()) return [3 /*break*/, 2];
-                    return [4 /*yield*/, new Promise(function (r, e) {
-                            //转成目标平台的路径分隔符
-                            remoteDir = remoteDir.replace(/\\/g, '/');
-                            //上传
-                            sftp.fastPut(localDir, remoteDir, function (err) {
-                                if (err) {
-                                    console.log(chalk_1.default.red('上传失败!', localDir, remoteDir));
-                                    e();
-                                    return;
-                                }
-                                console.log(chalk_1.default.gray('上传'), localDir, chalk_1.default.gray('-->'), chalk_1.default.green(remoteDir));
-                                r();
-                            });
-                        })];
-                case 1:
-                    _a.sent();
-                    return [3 /*break*/, 5];
-                case 2:
-                    if (!stat.isDirectory()) return [3 /*break*/, 5];
-                    //创建目录
-                    return [4 /*yield*/, new Promise(function (r) {
-                            sftp.mkdir(remoteDir.replace(/\\/g, '/'), function () {
-                                r();
-                            });
-                        })];
-                case 3:
-                    //创建目录
-                    _a.sent();
-                    //
-                    return [4 /*yield*/, Promise.all(fs_1.default.readdirSync(localDir).map(function (o) {
-                            return syncDF(sftp, path_1.default.join(localDir, o), path_1.default.join(remoteDir, o));
-                        }))];
-                case 4:
-                    //
-                    _a.sent();
-                    _a.label = 5;
-                case 5: return [2 /*return*/];
-            }
-        });
-    });
-}
 //# sourceMappingURL=index.js.map
