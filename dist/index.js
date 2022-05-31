@@ -47,13 +47,11 @@ var syncDF_1 = require("./syncDF");
 var getAbsolute_1 = require("./utils/getAbsolute");
 var watchDf_1 = require("./watchDf");
 var getComPath_1 = require("./utils/getComPath");
-var conn = new ssh2_1.default.Client();
-Manager_1.Manager.conn = conn;
+var readline = require('readline');
 /**
  * 开始服务
  */
 function start(config, keys, demo) {
-    var _this = this;
     if (demo === void 0) { demo = false; }
     //对config中的列表做判断
     if (keys && keys.length > 0) {
@@ -65,14 +63,35 @@ function start(config, keys, demo) {
         console.log(chalk_1.default.red('没有需要同步的内容，请在配置syncList中添加需要同步的列表'));
         return;
     }
-    //如果是演示的话只提示下就够了
+    //如果是演示的话需要再次确定
     if (demo) {
         for (var _i = 0, _a = config.syncList; _i < _a.length; _i++) {
             var _b = _a[_i], key = _b.key, title = _b.title, local = _b.local, remote = _b.remote;
             console.log(chalk_1.default.yellow("\u540C\u6B65->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " -> ").concat((0, getComPath_1.getComPath)(remote), "\n")));
         }
+        var rl_1 = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+        // ask user for the anme input
+        rl_1.question('是否开始(y/n)? ', function (name) {
+            rl_1.close();
+            /^y$/i.test(name) && start_(config);
+        });
         return;
     }
+    start_(config);
+}
+exports.start = start;
+/**
+ * 正式启动
+ * @param config
+ */
+function start_(config) {
+    var _this = this;
+    var conn = new ssh2_1.default.Client();
+    //
+    Manager_1.Manager.conn = conn;
     //
     Manager_1.Manager.mainConfig = config;
     //连接
@@ -142,5 +161,4 @@ function start(config, keys, demo) {
         passphrase: config.passphrase,
     });
 }
-exports.start = start;
 //# sourceMappingURL=index.js.map

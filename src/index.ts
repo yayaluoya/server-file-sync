@@ -1,14 +1,11 @@
 import { Manager, IConfig } from "./Manager";
-import ssh2, { SFTPWrapper } from "ssh2";
+import ssh2 from "ssh2";
 import chalk from "chalk";
 import { syncDF } from "./syncDF";
 import { getAbsolute } from "./utils/getAbsolute";
 import { watchDf } from "./watchDf";
 import { getComPath } from "./utils/getComPath";
-
-const conn = new ssh2.Client();
-
-Manager.conn = conn;
+const readline = require('readline');
 
 /**
  * 开始服务
@@ -24,13 +21,33 @@ export function start(config: IConfig, keys?: string[], demo = false) {
         console.log(chalk.red('没有需要同步的内容，请在配置syncList中添加需要同步的列表'));
         return;
     }
-    //如果是演示的话只提示下就够了
+    //如果是演示的话需要再次确定
     if (demo) {
         for (let { key, title, local, remote } of config.syncList) {
             console.log(chalk.yellow(`同步->${title}@${key}: ${getAbsolute(local)} -> ${getComPath(remote)}\n`));
         }
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+        // ask user for the anme input
+        rl.question('是否开始(y/n)? ', (name) => {
+            rl.close();
+            /^y$/i.test(name) && start_(config);
+        });
         return;
     }
+    start_(config);
+}
+
+/**
+ * 正式启动
+ * @param config 
+ */
+function start_(config: IConfig) {
+    const conn = new ssh2.Client();
+    //
+    Manager.conn = conn;
     //
     Manager.mainConfig = config;
     //连接
