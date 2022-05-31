@@ -20,13 +20,13 @@ module.exports = {
     syncList: [
         {
             key: 'hh',
-            title: 'hh',
+            title: '测试的项目',
             local: './dist',
             remote: '/www/test/sfs-test',
         },
     ],
     /** 是否监听 */
-    watch: true,
+    // watch: true,
     async updateF(conn, key) {
         // console.log('更新', key);
     }

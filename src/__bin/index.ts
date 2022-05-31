@@ -17,7 +17,9 @@ program.option('-v --version')
     .option('-h --help')
     .option('-i --init')
     .option('-c --config <path>')
-    .option('-dc --debug-config [path]');
+    .option('-dc --debug-config [path]')
+    .option('-k --keys <keys>')
+    .option('-d --demo')
 
 program.parse(process.argv);
 let opts = program.opts();
@@ -33,6 +35,8 @@ switch (true) {
         console.log(chalk.green('   -i --init ') + chalk.gray('在当前执行目录下生成默认配置文件'));
         console.log(chalk.green('   -c --config <path> ') + chalk.gray('用指定配置文件来运行'));
         console.log(chalk.green('   -dc --debug-config [path] ') + chalk.gray('查看某个配置文件'));
+        console.log(chalk.green('   -k --keys <keys> ') + chalk.gray('指定配置列表中的那些项目参与此次同步，用,号分隔'));
+        console.log(chalk.green('   -d --demo ') + chalk.gray('显示当前可能会参与同步的项目，在真正同步项目的时候可以用这个命令演示下'));
         console.log(chalk.yellow('sfs的使用方式：'));
         console.log(chalk.gray('    完整命令为server-file-sync，快捷命令为sfs'));
         console.log(chalk.gray('    默认自定义配置是当前工具执行路径下的sfs.config.js文件'));
@@ -58,7 +62,7 @@ switch (true) {
             ObjectUtils.merge(defaultConfig, getCwdConfig())
         }
         //正式运行
-        start(defaultConfig);
+        start(defaultConfig, opts.keys?.split(','), opts.demo);
 }
 
 

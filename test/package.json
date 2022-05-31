@@ -4,7 +4,6 @@
   "description": "",
   "main": "sfs.config.js",
   "scripts": {
-    "sfs-i": "sfs -i",
     "sync": "sfs"
   },
   "author": "",

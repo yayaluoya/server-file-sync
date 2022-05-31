@@ -52,12 +52,32 @@ Manager_1.Manager.conn = conn;
 /**
  * 开始服务
  */
-function start(config) {
+function start(config, keys, demo) {
     var _this = this;
+    if (demo === void 0) { demo = false; }
+    //对config中的列表做判断
+    if (keys && keys.length > 0) {
+        config.syncList = config.syncList.filter(function (_) {
+            return keys.includes(_.key);
+        });
+    }
+    if (!config.syncList || config.syncList.length == 0) {
+        console.log(chalk_1.default.red('没有需要同步的内容，请在配置syncList中添加需要同步的列表'));
+        return;
+    }
+    //如果是演示的话只提示下就够了
+    if (demo) {
+        for (var _i = 0, _a = config.syncList; _i < _a.length; _i++) {
+            var _b = _a[_i], key = _b.key, title = _b.title, local = _b.local, remote = _b.remote;
+            console.log(chalk_1.default.yellow("\u540C\u6B65->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " -> ").concat((0, getComPath_1.getComPath)(remote), "\n")));
+        }
+        return;
+    }
+    //
     Manager_1.Manager.mainConfig = config;
     //连接
     conn.on('ready', function () {
-        console.log(chalk_1.default.red('连接成功...\n'));
+        console.log(chalk_1.default.blue('\n服务器连接成功...\n'));
         conn.sftp(function (err, sftp) { return __awaiter(_this, void 0, void 0, function () {
             var _i, _a, _b, key, title, local, remote, _c, _d, _e, key, title, local, remote;
             var _f, _g;
@@ -75,7 +95,7 @@ function start(config) {
                     case 1:
                         if (!(_i < _a.length)) return [3 /*break*/, 4];
                         _b = _a[_i], key = _b.key, title = _b.title, local = _b.local, remote = _b.remote;
-                        console.log(chalk_1.default.yellow("\u5F00\u59CB\u76D1\u542C".concat(title, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " -> ").concat((0, getComPath_1.getComPath)(remote), "\n")));
+                        console.log(chalk_1.default.yellow("\u5F00\u59CB\u76D1\u542C->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " -> ").concat((0, getComPath_1.getComPath)(remote), "\n")));
                         return [4 /*yield*/, (0, watchDf_1.watchDf)(key, (0, getAbsolute_1.getAbsolute)(local), (0, getComPath_1.getComPath)(remote))];
                     case 2:
                         _h.sent();
@@ -90,7 +110,7 @@ function start(config) {
                     case 6:
                         if (!(_c < _d.length)) return [3 /*break*/, 10];
                         _e = _d[_c], key = _e.key, title = _e.title, local = _e.local, remote = _e.remote;
-                        console.log(chalk_1.default.yellow("\u5F00\u59CB\u540C\u6B65".concat(title, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " -> ").concat((0, getComPath_1.getComPath)(remote), "\n")));
+                        console.log(chalk_1.default.yellow("\u5F00\u59CB\u540C\u6B65->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " -> ").concat((0, getComPath_1.getComPath)(remote), "\n")));
                         //同步
                         return [4 /*yield*/, (0, syncDF_1.syncDF)((0, getAbsolute_1.getAbsolute)(local), (0, getComPath_1.getComPath)(remote))];
                     case 7:
@@ -107,7 +127,7 @@ function start(config) {
                         return [3 /*break*/, 6];
                     case 10:
                         //关闭连接
-                        console.log(chalk_1.default.red('\n同步完成'));
+                        console.log(chalk_1.default.green('\n同步完成'));
                         conn.end();
                         _h.label = 11;
                     case 11: return [2 /*return*/];
