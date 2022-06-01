@@ -37,6 +37,16 @@ export function start(config: IConfig, keys?: string[], demo = false) {
         });
         return;
     }
+    if (!config.privateKey) {
+        console.log(chalk.red('请配置ssh私钥'));
+        console.log('配置ssh的方法：');
+        console.log(chalk.gray('1.命令行执行 ssh-keygen -f <文件名> 然后按照提示输入密码，完成后会在当前执行目录生成两个文件，不带.pub的是私钥，带.pub的是公钥'));
+        console.log(chalk.gray('2.把公钥中的内容追加到服务器的/root/.ssh/authorized_keys文件中'));
+        console.log(chalk.gray('3.把刚刚输入的密码和私钥的内容分别添加到配置文件的字段passphrase和privateKey中就行了'));
+        console.log(chalk.red('注意：私钥不要加到项目的版本控制系统中，不要泄露给别人'));
+        return;
+    }
+    //
     start_(config);
 }
 

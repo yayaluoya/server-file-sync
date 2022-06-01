@@ -15,7 +15,7 @@ module.exports = {
     /** 私钥密码 */
     passphrase: 'asdf',
     /** 私钥字符串 */
-    privateKey: readFileSync(join(__dirname, './.ssh/asdf')).toString(),
+    privateKey: readFileSync(join(__dirname, './.ssh/asdf')),
     /** 同步列表 */
     syncList: [
         {

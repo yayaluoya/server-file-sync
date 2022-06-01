@@ -49,7 +49,7 @@ switch (true) {
     case Boolean(opts.debugConfig):
         console.log(chalk_1.default.yellow('配置信息：'));
         if (typeof opts.debugConfig == 'string') {
-            console.log(ObjectUtils_1.ObjectUtils.merge(defaultConfig, getConfig((0, getAbsolute_1.getAbsolute)(opts.debugConfig), '查找配置失败!')));
+            console.log(ObjectUtils_1.ObjectUtils.merge(defaultConfig, getConfig((0, getAbsolute_1.getAbsolute)(opts.debugConfig), '配置文件导入错误!')));
         }
         else {
             console.log(ObjectUtils_1.ObjectUtils.merge(defaultConfig, getCwdConfig()));
@@ -59,7 +59,7 @@ switch (true) {
     default:
         //合并配置
         if (Boolean(opts.config)) {
-            ObjectUtils_1.ObjectUtils.merge(defaultConfig, getConfig((0, getAbsolute_1.getAbsolute)(opts.config), '查找配置失败，将以默认配置运行!'));
+            ObjectUtils_1.ObjectUtils.merge(defaultConfig, getConfig((0, getAbsolute_1.getAbsolute)(opts.config), '配置文件导入错误，将以默认配置运行!'));
         }
         else {
             ObjectUtils_1.ObjectUtils.merge(defaultConfig, getCwdConfig());
@@ -72,7 +72,7 @@ switch (true) {
  * @returns
  */
 function getCwdConfig() {
-    return getConfig(path_1.default.join(process.cwd(), cuConfigName));
+    return getConfig(path_1.default.join(process.cwd(), cuConfigName), '配置文件导入错误!');
 }
 /**
  * 获取自定义的配置文件
