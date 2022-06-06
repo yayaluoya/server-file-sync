@@ -66,8 +66,11 @@ function start(config, keys, demo) {
     //如果是演示的话需要再次确定
     if (demo) {
         for (var _i = 0, _a = config.syncList; _i < _a.length; _i++) {
-            var _b = _a[_i], key = _b.key, title = _b.title, local = _b.local, remote = _b.remote;
-            console.log(chalk_1.default.yellow("\u540C\u6B65->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " -> ").concat((0, getComPath_1.getComPath)(remote), "\n")));
+            var _b = _a[_i], key = _b.key, title = _b.title, paths = _b.paths;
+            for (var _c = 0, paths_1 = paths; _c < paths_1.length; _c++) {
+                var _d = paths_1[_c], local = _d.local, remote = _d.remote;
+                console.log(chalk_1.default.yellow("\u540C\u6B65->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " -> ").concat((0, getComPath_1.getComPath)(remote), "\n")));
+            }
         }
         var rl_1 = readline.createInterface({
             input: process.stdin,
@@ -81,12 +84,12 @@ function start(config, keys, demo) {
         return;
     }
     if (!config.privateKey) {
-        console.log(chalk_1.default.red('请配置ssh私钥'));
+        console.log(chalk_1.default.red('请配置ssh私钥!'));
         console.log('配置ssh的方法：');
-        console.log(chalk_1.default.gray('1.命令行执行 ssh-keygen -f <文件名> 然后按照提示输入密码，完成后会在当前执行目录生成两个文件，不带.pub的是私钥，带.pub的是公钥'));
-        console.log(chalk_1.default.gray('2.把公钥中的内容追加到服务器的/root/.ssh/authorized_keys文件中'));
-        console.log(chalk_1.default.gray('3.把刚刚输入的密码和私钥的内容分别添加到配置文件的字段passphrase和privateKey中就行了'));
-        console.log(chalk_1.default.red('注意：私钥不要加到项目的版本控制系统中，不要泄露给别人'));
+        console.log(chalk_1.default.gray('1.命令行执行 ssh-keygen -f <文件名> 然后按照提示输入<密码>，完成后会在当前执行目录生成两个文件，不带.pub的是<私钥>，带.pub的是<公钥>'));
+        console.log(chalk_1.default.gray('2.把<公钥>中的内容追加到服务器的/root/.ssh/authorized_keys文件中'));
+        console.log(chalk_1.default.gray('3.把<密码>和<私钥>的内容分别添加到配置文件的字段passphrase和privateKey中就行了'));
+        console.log(chalk_1.default.red('注意：私钥不要加到项目的版本控制系统中'));
         return;
     }
     //
@@ -108,58 +111,78 @@ function start_(config) {
     conn.on('ready', function () {
         console.log(chalk_1.default.blue('\n服务器连接成功...\n'));
         conn.sftp(function (err, sftp) { return __awaiter(_this, void 0, void 0, function () {
-            var _i, _a, _b, key, title, local, remote, _c, _d, _e, key, title, local, remote;
-            var _f, _g;
-            return __generator(this, function (_h) {
-                switch (_h.label) {
+            var _i, _a, _b, key, title, paths, _c, paths_2, _d, local, remote, ignored, _e, _f, _g, key, title, paths, _h, paths_3, _j, local, remote, ignored;
+            var _k, _l;
+            return __generator(this, function (_m) {
+                switch (_m.label) {
                     case 0:
                         Manager_1.Manager.sftp = sftp;
                         if (err) {
                             console.log(chalk_1.default.red('启动sftp失败'), err);
                             return [2 /*return*/];
                         }
-                        if (!config.watch) return [3 /*break*/, 5];
+                        if (!config.watch) return [3 /*break*/, 7];
                         _i = 0, _a = config.syncList;
-                        _h.label = 1;
+                        _m.label = 1;
                     case 1:
-                        if (!(_i < _a.length)) return [3 /*break*/, 4];
-                        _b = _a[_i], key = _b.key, title = _b.title, local = _b.local, remote = _b.remote;
-                        console.log(chalk_1.default.yellow("\u5F00\u59CB\u76D1\u542C->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " -> ").concat((0, getComPath_1.getComPath)(remote), "\n")));
-                        return [4 /*yield*/, (0, watchDf_1.watchDf)(key, (0, getAbsolute_1.getAbsolute)(local), (0, getComPath_1.getComPath)(remote))];
+                        if (!(_i < _a.length)) return [3 /*break*/, 6];
+                        _b = _a[_i], key = _b.key, title = _b.title, paths = _b.paths;
+                        _c = 0, paths_2 = paths;
+                        _m.label = 2;
                     case 2:
-                        _h.sent();
-                        _h.label = 3;
+                        if (!(_c < paths_2.length)) return [3 /*break*/, 5];
+                        _d = paths_2[_c], local = _d.local, remote = _d.remote, ignored = _d.ignored;
+                        console.log(chalk_1.default.yellow("\u76D1\u542C->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " -> ").concat((0, getComPath_1.getComPath)(remote), "\n")));
+                        return [4 /*yield*/, (0, watchDf_1.watchDf)(key, (0, getAbsolute_1.getAbsolute)(local), (0, getComPath_1.getComPath)(remote), {
+                                ignored: ignored,
+                            })];
                     case 3:
+                        _m.sent();
+                        _m.label = 4;
+                    case 4:
+                        _c++;
+                        return [3 /*break*/, 2];
+                    case 5:
                         _i++;
                         return [3 /*break*/, 1];
-                    case 4: return [3 /*break*/, 11];
-                    case 5:
-                        _c = 0, _d = config.syncList;
-                        _h.label = 6;
-                    case 6:
-                        if (!(_c < _d.length)) return [3 /*break*/, 10];
-                        _e = _d[_c], key = _e.key, title = _e.title, local = _e.local, remote = _e.remote;
-                        console.log(chalk_1.default.yellow("\u5F00\u59CB\u540C\u6B65->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " -> ").concat((0, getComPath_1.getComPath)(remote), "\n")));
-                        //同步
-                        return [4 /*yield*/, (0, syncDF_1.syncDF)((0, getAbsolute_1.getAbsolute)(local), (0, getComPath_1.getComPath)(remote))];
+                    case 6: return [3 /*break*/, 16];
                     case 7:
-                        //同步
-                        _h.sent();
-                        //触发更新回调
-                        return [4 /*yield*/, ((_g = (_f = Manager_1.Manager.mainConfig).updateF) === null || _g === void 0 ? void 0 : _g.call(_f, Manager_1.Manager.conn, key))];
+                        _e = 0, _f = config.syncList;
+                        _m.label = 8;
                     case 8:
-                        //触发更新回调
-                        _h.sent();
-                        _h.label = 9;
+                        if (!(_e < _f.length)) return [3 /*break*/, 15];
+                        _g = _f[_e], key = _g.key, title = _g.title, paths = _g.paths;
+                        _h = 0, paths_3 = paths;
+                        _m.label = 9;
                     case 9:
-                        _c++;
-                        return [3 /*break*/, 6];
+                        if (!(_h < paths_3.length)) return [3 /*break*/, 12];
+                        _j = paths_3[_h], local = _j.local, remote = _j.remote, ignored = _j.ignored;
+                        console.log(chalk_1.default.yellow("\u540C\u6B65->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " -> ").concat((0, getComPath_1.getComPath)(remote), "\n")));
+                        //同步
+                        return [4 /*yield*/, (0, syncDF_1.syncDF)((0, getAbsolute_1.getAbsolute)(local), (0, getComPath_1.getComPath)(remote), ignored)];
                     case 10:
+                        //同步
+                        _m.sent();
+                        _m.label = 11;
+                    case 11:
+                        _h++;
+                        return [3 /*break*/, 9];
+                    case 12: 
+                    //触发更新回调
+                    return [4 /*yield*/, ((_l = (_k = Manager_1.Manager.mainConfig).updateF) === null || _l === void 0 ? void 0 : _l.call(_k, Manager_1.Manager.conn, key))];
+                    case 13:
+                        //触发更新回调
+                        _m.sent();
+                        _m.label = 14;
+                    case 14:
+                        _e++;
+                        return [3 /*break*/, 8];
+                    case 15:
                         //关闭连接
                         console.log(chalk_1.default.green('\n同步完成'));
                         conn.end();
-                        _h.label = 11;
-                    case 11: return [2 /*return*/];
+                        _m.label = 16;
+                    case 16: return [2 /*return*/];
                 }
             });
         }); });

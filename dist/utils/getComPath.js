@@ -12,7 +12,7 @@ var path_1 = __importDefault(require("path"));
  */
 function getComPath(_path) {
     if (_path === void 0) { _path = ''; }
-    return path_1.default.normalize(_path).replace(/\\/g, '/');
+    return path_1.default.normalize(_path).replace(/\\+/g, '/');
 }
 exports.getComPath = getComPath;
 //# sourceMappingURL=getComPath.js.map

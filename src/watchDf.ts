@@ -5,15 +5,22 @@ import chalk from "chalk";
 import { getComPath } from "./utils/getComPath";
 import moment from "moment";
 import { Manager } from "./Manager";
+import { type Matcher } from 'anymatch';
 
 /**
  * 同步目录和文件
  * @param key 唯一键值
  * @param localDir 本地目录
  * @param remoteDir 远程目录
+ * @param op 选项
  */
-export async function watchDf(key: string, localDir: string, remoteDir: string) {
-    chokidar.watch(localDir).on('all', async (event, _path) => {
+export async function watchDf(key: string, localDir: string, remoteDir: string, op: {
+    /** 忽略配置 */
+    ignored: Matcher;
+}) {
+    chokidar.watch(localDir, {
+        ignored: op.ignored || [],
+    }).on('all', async (event, _path) => {
         if (event == 'add' || event == 'change') {
             let relativePath = path.relative(localDir, _path);
             //转成通用平台的路径分隔符

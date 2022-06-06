@@ -45,28 +45,33 @@ var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
 var Manager_1 = require("./Manager");
 var getComPath_1 = require("./utils/getComPath");
+var anymatch_1 = __importDefault(require("anymatch"));
 /**
  * 同步目录和文件
  * @param localDir 本地目录
  * @param remoteDir 远程目录
  */
-function syncDF(localDir, remoteDir) {
+function syncDF(localDir, remoteDir, ignored) {
     return __awaiter(this, void 0, void 0, function () {
         var stat;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    //忽略
+                    if (ignored && (0, anymatch_1.default)(ignored, (0, getComPath_1.getComPath)(localDir))) {
+                        return [2 /*return*/];
+                    }
                     stat = fs_1.default.statSync(localDir);
                     if (!stat.isFile()) return [3 /*break*/, 2];
                     return [4 /*yield*/, new Promise(function (r, e) {
                             //上传
                             Manager_1.Manager.sftp.fastPut(localDir, (0, getComPath_1.getComPath)(remoteDir), function (err) {
                                 if (err) {
-                                    console.log(chalk_1.default.red('上传失败!', localDir, remoteDir));
+                                    console.log(chalk_1.default.red('同步失败!', localDir, remoteDir));
                                     e();
                                     return;
                                 }
-                                console.log(chalk_1.default.gray('上传成功'), localDir, chalk_1.default.gray('->'), chalk_1.default.green((0, getComPath_1.getComPath)(remoteDir)));
+                                console.log(chalk_1.default.gray('同步成功'), localDir, chalk_1.default.gray('->'), chalk_1.default.green((0, getComPath_1.getComPath)(remoteDir)));
                                 r();
                             });
                         })];
@@ -86,7 +91,7 @@ function syncDF(localDir, remoteDir) {
                     _a.sent();
                     //
                     return [4 /*yield*/, Promise.all(fs_1.default.readdirSync(localDir).map(function (o) {
-                            return syncDF(path_1.default.join(localDir, o), path_1.default.join(remoteDir, o));
+                            return syncDF(path_1.default.join(localDir, o), path_1.default.join(remoteDir, o), ignored);
                         }))];
                 case 4:
                     //

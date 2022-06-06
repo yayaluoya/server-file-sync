@@ -1,4 +1,5 @@
 const { readFileSync } = require("fs");
+const path = require("path");
 const { join } = require("path");
 
 /**
@@ -21,12 +22,21 @@ module.exports = {
         {
             key: 'hh',
             title: '测试的项目',
-            local: './dist',
-            remote: '/www/test/sfs-test',
+            paths: [
+                {
+                    local: './dist',
+                    remote: '/www/test/sfs-test',
+                    ignored: path.join(__dirname, './dist/a/**').replace(/\\+/g, '/'),
+                },
+                {
+                    local: './dist/hh.html',
+                    remote: '/www/test/sfs-test2/hh.html',
+                },
+            ],
         },
     ],
     /** 是否监听 */
-    // watch: true,
+    watch: true,
     async updateF(conn, key) {
         // console.log('更新', key);
     }

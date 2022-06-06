@@ -1,4 +1,5 @@
 import { Client, SFTPWrapper } from "ssh2";
+import { type Matcher } from 'anymatch';
 
 /**
  * 配置文件类型
@@ -22,10 +23,15 @@ export interface IConfig {
         key: string;
         /** 标题 */
         title: string;
-        /** 本地地址 */
-        local: string;
-        /** 远程地址 */
-        remote: string;
+        /** 路径列表 */
+        paths: {
+            /** 本地地址 */
+            local: string;
+            /** 远程地址 */
+            remote: string;
+            /** 文件忽略，请注意不支持 Windows 样式的反斜杠作为分隔符*/
+            ignored?: Matcher;
+        }[],
     }[];
     /** 是否监听 */
     watch: boolean;

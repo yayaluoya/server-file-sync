@@ -60,12 +60,15 @@ var Manager_1 = require("./Manager");
  * @param key 唯一键值
  * @param localDir 本地目录
  * @param remoteDir 远程目录
+ * @param op 选项
  */
-function watchDf(key, localDir, remoteDir) {
+function watchDf(key, localDir, remoteDir, op) {
     return __awaiter(this, void 0, void 0, function () {
         var _this = this;
         return __generator(this, function (_a) {
-            chokidar_1.default.watch(localDir).on('all', function (event, _path) { return __awaiter(_this, void 0, void 0, function () {
+            chokidar_1.default.watch(localDir, {
+                ignored: op.ignored || [],
+            }).on('all', function (event, _path) { return __awaiter(_this, void 0, void 0, function () {
                 var relativePath, onRemotePath_1;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
