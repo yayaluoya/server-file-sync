@@ -51,9 +51,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.watchDf = void 0;
 var chokidar_1 = __importDefault(require("chokidar"));
 var path_1 = __importDefault(require("path"));
-var chalk_1 = __importDefault(require("chalk"));
 var getComPath_1 = require("./utils/getComPath");
-var moment_1 = __importDefault(require("moment"));
 var Manager_1 = require("./Manager");
 /**
  * 同步目录和文件
@@ -69,29 +67,22 @@ function watchDf(key, localDir, remoteDir, op) {
             chokidar_1.default.watch(localDir, {
                 ignored: op.ignored || [],
             }).on('all', function (event, _path) { return __awaiter(_this, void 0, void 0, function () {
-                var relativePath, onRemotePath_1;
+                var relativePath, onRemotePath;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
                             if (!(event == 'add' || event == 'change')) return [3 /*break*/, 2];
                             relativePath = path_1.default.relative(localDir, _path);
-                            onRemotePath_1 = path_1.default.join(remoteDir, relativePath);
+                            onRemotePath = path_1.default.join(remoteDir, relativePath);
                             //创建目录
-                            return [4 /*yield*/, mkDir(Manager_1.Manager.sftp, remoteDir, path_1.default.dirname(relativePath))];
+                            return [4 /*yield*/, mkDir(remoteDir, path_1.default.dirname(relativePath))];
                         case 1:
                             //创建目录
                             _a.sent();
                             //同步
-                            Manager_1.Manager.sftp.fastPut(_path, (0, getComPath_1.getComPath)(onRemotePath_1), function (err) {
-                                var _a, _b;
-                                if (err) {
-                                    console.log(chalk_1.default.red('同步失败!', _path, onRemotePath_1));
-                                    return;
-                                }
+                            Manager_1.Manager.fastPut(_path, (0, getComPath_1.getComPath)(onRemotePath)).then(function () {
                                 //触发更新回调
-                                (_b = (_a = Manager_1.Manager.mainConfig).updateF) === null || _b === void 0 ? void 0 : _b.call(_a, Manager_1.Manager.conn, key);
-                                //
-                                console.log(chalk_1.default.gray('同步成功'), _path, chalk_1.default.gray('->'), chalk_1.default.green((0, getComPath_1.getComPath)(onRemotePath_1)), chalk_1.default.gray((0, moment_1.default)().format('HH:mm:ss')));
+                                Manager_1.Manager.updateF(key);
                             });
                             _a.label = 2;
                         case 2: return [2 /*return*/];
@@ -108,42 +99,26 @@ exports.watchDf = watchDf;
  * @param rootPath 相对目录
  * @param _path
  */
-function mkDir(sftp, rootPath, _path) {
+function mkDir(rootPath, _path) {
     return __awaiter(this, void 0, void 0, function () {
-        var _paths, _loop_1, i, len;
+        var _paths, i, len, dir;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     _paths = (0, getComPath_1.getComPath)(_path).split('/');
-                    _loop_1 = function (i, len) {
-                        var dir;
-                        return __generator(this, function (_b) {
-                            switch (_b.label) {
-                                case 0:
-                                    dir = path_1.default.join.apply(path_1.default, __spreadArray([rootPath], _paths.slice(0, i + 1), false));
-                                    //如果就是相对目录的话就跳过
-                                    if ((0, getComPath_1.getComPath)(dir) == (0, getComPath_1.getComPath)(rootPath)) {
-                                        return [2 /*return*/, "continue"];
-                                    }
-                                    //
-                                    return [4 /*yield*/, new Promise(function (r) {
-                                            sftp.mkdir((0, getComPath_1.getComPath)(dir), function () {
-                                                r();
-                                            });
-                                        })];
-                                case 1:
-                                    //
-                                    _b.sent();
-                                    return [2 /*return*/];
-                            }
-                        });
-                    };
                     i = 0, len = _paths.length;
                     _a.label = 1;
                 case 1:
                     if (!(i < len)) return [3 /*break*/, 4];
-                    return [5 /*yield**/, _loop_1(i, len)];
+                    dir = path_1.default.join.apply(path_1.default, __spreadArray([rootPath], _paths.slice(0, i + 1), false));
+                    //
+                    if ((0, getComPath_1.getComPath)(dir) == (0, getComPath_1.getComPath)(rootPath)) {
+                        return [3 /*break*/, 3];
+                    }
+                    //
+                    return [4 /*yield*/, Manager_1.Manager.mkdir((0, getComPath_1.getComPath)(dir))];
                 case 2:
+                    //
                     _a.sent();
                     _a.label = 3;
                 case 3:

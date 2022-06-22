@@ -8,6 +8,14 @@ var ObjectUtils = /** @class */ (function () {
     function ObjectUtils() {
     }
     /**
+    * 克隆一个对象
+    * 采用序列化和反序列化的方式，function不会被克隆
+    * @param _O 该对象
+    */
+    ObjectUtils.clone = function (_data) {
+        return JSON.parse(JSON.stringify(_data));
+    };
+    /**
      * 在a对象上合并b对象的值
      * 类型以b对象上的为准
      * @param a

@@ -13,7 +13,7 @@
 sfs -h 查看所有命令和使用方式
 
 #### 连接方式
-- 本工具只支持ssh的连接方式，因为这个是最安全的。
+- 本工具只支持ssh密钥的连接方式，因为这个是最安全的。
 
 - 首先在某个目录下执行 ssh-keygen -f <fileName>生成一对密钥（期间会提示你输密码），不带pub的是私钥带pub的是公共密钥，你要把公钥的内容添加到服务器的/root/.ssh/authorized_keys文件中，然后把私钥和对应的密码添加进本工具的配置文件中（具体字段见配置文件），这时就能连接到服务器并同步文件了。
 
@@ -26,6 +26,7 @@ sfs -h 查看所有命令和使用方式
  * 配置文件类型
  */
 import { type Matcher } from 'anymatch';
+import { Client, SFTPWrapper } from "ssh2";
 export interface IConfig {
     /** 配置名字 */
     name: string;
@@ -58,6 +59,9 @@ export interface IConfig {
     /** 是否监听 */
     watch: boolean;
     /** 更新回调 */
-    updateF?: (conn: Client, key: string) => Promise<any>;
+    updateF?: (op: {
+        conn: () => Promise<Client>;
+        sftp: SFTPWrapper;
+    }, key: string) => Promise<any>;
 }
 ```

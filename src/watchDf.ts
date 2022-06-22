@@ -1,9 +1,6 @@
-import { SFTPWrapper } from "ssh2";
 import chokidar from "chokidar";
 import path from "path";
-import chalk from "chalk";
 import { getComPath } from "./utils/getComPath";
-import moment from "moment";
 import { Manager } from "./Manager";
 import { type Matcher } from 'anymatch';
 
@@ -26,18 +23,12 @@ export async function watchDf(key: string, localDir: string, remoteDir: string, 
             //转成通用平台的路径分隔符
             let onRemotePath = path.join(remoteDir, relativePath);
             //创建目录
-            await mkDir(Manager.sftp, remoteDir, path.dirname(relativePath));
+            await mkDir(remoteDir, path.dirname(relativePath));
             //同步
-            Manager.sftp.fastPut(_path, getComPath(onRemotePath), (err) => {
-                if (err) {
-                    console.log(chalk.red('同步失败!', _path, onRemotePath));
-                    return;
-                }
+            Manager.fastPut(_path, getComPath(onRemotePath)).then(() => {
                 //触发更新回调
-                Manager.mainConfig.updateF?.(Manager.conn, key);
-                //
-                console.log(chalk.gray('同步成功'), _path, chalk.gray('->'), chalk.green(getComPath(onRemotePath)), chalk.gray(moment().format('HH:mm:ss')));
-            });
+                Manager.updateF(key);
+            })
         }
     });
 }
@@ -47,19 +38,15 @@ export async function watchDf(key: string, localDir: string, remoteDir: string, 
  * @param rootPath 相对目录
  * @param _path 
  */
-async function mkDir(sftp: SFTPWrapper, rootPath: string, _path: string) {
+async function mkDir(rootPath: string, _path: string) {
     let _paths = getComPath(_path).split('/');
     for (let i = 0, len = _paths.length; i < len; i++) {
         let dir = path.join(rootPath, ..._paths.slice(0, i + 1));
-        //如果就是相对目录的话就跳过
+        //
         if (getComPath(dir) == getComPath(rootPath)) {
             continue;
         }
         //
-        await new Promise<void>((r) => {
-            sftp.mkdir(getComPath(dir), () => {
-                r();
-            });
-        });
+        await Manager.mkdir(getComPath(dir));
     }
 }

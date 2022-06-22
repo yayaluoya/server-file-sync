@@ -36,8 +36,8 @@ switch (true) {
         console.log(chalk_1.default.green('   -i --init ') + chalk_1.default.gray('在当前执行目录下生成默认配置文件'));
         console.log(chalk_1.default.green('   -c --config <path> ') + chalk_1.default.gray('用指定配置文件来运行'));
         console.log(chalk_1.default.green('   -dc --debug-config [path] ') + chalk_1.default.gray('查看某个配置文件'));
-        console.log(chalk_1.default.green('   -k --keys <keys> ') + chalk_1.default.gray('指定配置列表中的那些项目参与此次同步，用,号分隔'));
-        console.log(chalk_1.default.green('   -d --demo ') + chalk_1.default.gray('显示当前可能会参与同步的项目，需要再次确定才会真正同步，在重要场合加上这个参数可以防止出错'));
+        console.log(chalk_1.default.green('   -k --keys <keys> ') + chalk_1.default.gray('指定配置列表中的那些项目参与此次同步，多个项目用,号分隔'));
+        console.log(chalk_1.default.green('   -d --demo ') + chalk_1.default.gray('同步时需要再次确定才会真正同步，在重要场合加上这个参数可以防止出错'));
         console.log(chalk_1.default.yellow('sfs的使用方式：'));
         console.log(chalk_1.default.gray('    完整命令为server-file-sync，快捷命令为sfs'));
         console.log(chalk_1.default.gray('    默认自定义配置是当前工具执行路径下的sfs.config.js文件'));

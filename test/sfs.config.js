@@ -36,9 +36,22 @@ module.exports = {
         },
     ],
     /** 是否监听 */
-    watch: true,
-    async updateF(conn, key) {
+    watch: false,
+    async updateF({
+        connF,
+        sftp,
+    }, key) {
         // console.log('更新', key);
+        connF().then((conn) => {
+            conn.exec('uptime', (err, stream) => {
+                if (err) throw err;
+                stream.on('close', (code, signal) => {
+                    conn.end();
+                }).on('data', (data) => {
+                    console.log('STDOUT: ' + data);
+                })
+            });
+        })
     }
 }
 

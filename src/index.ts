@@ -1,5 +1,4 @@
 import { Manager, IConfig } from "./Manager";
-import ssh2 from "ssh2";
 import chalk from "chalk";
 import { syncDF } from "./syncDF";
 import { getAbsolute } from "./utils/getAbsolute";
@@ -33,9 +32,17 @@ export function start(config: IConfig, keys?: string[], demo = false) {
             output: process.stdout
         });
         // ask user for the anme input
-        rl.question('是否开始(y/n)? ', (name) => {
+        rl.question(chalk.cyan('上传:y/Y,演示:d/D 输入其它字符取消: '), (name) => {
             rl.close();
-            /^y$/i.test(name) && start_(config);
+            switch (true) {
+                /** 上传 */
+                case /^y$/i.test(name):
+                    start_(config);
+                    break;
+                /** 演示 */
+                case /^d$/i.test(name):
+                    start_(config, true);
+            }
         });
         return;
     }
@@ -56,53 +63,37 @@ export function start(config: IConfig, keys?: string[], demo = false) {
  * 正式启动
  * @param config 
  */
-function start_(config: IConfig) {
-    const conn = new ssh2.Client();
+function start_(config: IConfig, _false = false) {
     //
-    Manager.conn = conn;
-    //
-    Manager.mainConfig = config;
-    //连接
-    conn.on('ready', () => {
-        console.log(chalk.blue('\n服务器连接成功...\n'));
-        conn.sftp(async (err, sftp) => {
-            Manager.sftp = sftp;
-            if (err) {
-                console.log(chalk.red('启动sftp失败'), err);
-                return;
-            }
-            //查看是否监听
-            if (config.watch) {
-                for (let { key, title, paths } of config.syncList) {
-                    for (let { local, remote, ignored } of paths) {
-                        console.log(chalk.yellow(`监听->${title}@${key}: ${getAbsolute(local)} -> ${getComPath(remote)}\n`));
-                        await watchDf(key, getAbsolute(local), getComPath(remote), {
-                            ignored,
-                        });
-                    }
+    Manager.connect(config, _false).then(async ({
+        conn,
+        sftp,
+    }) => {
+        //查看是否监听
+        if (config.watch) {
+            for (let { key, title, paths } of config.syncList) {
+                for (let { local, remote, ignored } of paths) {
+                    console.log(chalk.yellow(`监听->${title}@${key}: ${getAbsolute(local)} -> ${getComPath(remote)}\n`));
+                    await watchDf(key, getAbsolute(local), getComPath(remote), {
+                        ignored,
+                    });
                 }
             }
-            //直接上传
-            else {
-                for (let { key, title, paths } of config.syncList) {
-                    for (let { local, remote, ignored } of paths) {
-                        console.log(chalk.yellow(`同步->${title}@${key}: ${getAbsolute(local)} -> ${getComPath(remote)}\n`));
-                        //同步
-                        await syncDF(getAbsolute(local), getComPath(remote), ignored);
-                    }
-                    //触发更新回调
-                    await Manager.mainConfig.updateF?.(Manager.conn, key);
+        }
+        //直接上传
+        else {
+            for (let { key, title, paths } of config.syncList) {
+                for (let { local, remote, ignored } of paths) {
+                    console.log(chalk.yellow(`同步->${title}@${key}: ${getAbsolute(local)} -> ${getComPath(remote)}\n`));
+                    //同步
+                    await syncDF(getAbsolute(local), getComPath(remote), ignored);
                 }
-                //关闭连接
-                console.log(chalk.green('\n同步完成'));
-                conn.end();
+                //触发更新回调
+                await Manager.updateF(key);
             }
-        });
-    }).connect({
-        host: config.host,
-        port: config.port,
-        username: config.username,
-        privateKey: config.privateKey,
-        passphrase: config.passphrase,
+            //关闭连接
+            console.log(chalk.green('\n同步完成'));
+            conn.end();
+        }
     });
 }

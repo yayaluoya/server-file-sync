@@ -40,7 +40,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.syncDF = void 0;
-var chalk_1 = __importDefault(require("chalk"));
 var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
 var Manager_1 = require("./Manager");
@@ -63,29 +62,14 @@ function syncDF(localDir, remoteDir, ignored) {
                     }
                     stat = fs_1.default.statSync(localDir);
                     if (!stat.isFile()) return [3 /*break*/, 2];
-                    return [4 /*yield*/, new Promise(function (r, e) {
-                            //上传
-                            Manager_1.Manager.sftp.fastPut(localDir, (0, getComPath_1.getComPath)(remoteDir), function (err) {
-                                if (err) {
-                                    console.log(chalk_1.default.red('同步失败!', localDir, remoteDir));
-                                    e();
-                                    return;
-                                }
-                                console.log(chalk_1.default.gray('同步成功'), localDir, chalk_1.default.gray('->'), chalk_1.default.green((0, getComPath_1.getComPath)(remoteDir)));
-                                r();
-                            });
-                        })];
+                    return [4 /*yield*/, Manager_1.Manager.fastPut(localDir, (0, getComPath_1.getComPath)(remoteDir))];
                 case 1:
                     _a.sent();
                     return [3 /*break*/, 5];
                 case 2:
                     if (!stat.isDirectory()) return [3 /*break*/, 5];
                     //创建目录
-                    return [4 /*yield*/, new Promise(function (r) {
-                            Manager_1.Manager.sftp.mkdir((0, getComPath_1.getComPath)(remoteDir), function () {
-                                r();
-                            });
-                        })];
+                    return [4 /*yield*/, Manager_1.Manager.mkdir((0, getComPath_1.getComPath)(remoteDir))];
                 case 3:
                     //创建目录
                     _a.sent();
