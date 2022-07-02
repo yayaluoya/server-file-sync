@@ -1,4 +1,10 @@
 /**
+ * 带代码提示的获取config的方法
+ * module.exports = getConfig({...});
+ */
+// const { getConfig } = require("server-file-sync");
+
+/**
  * server-file-sync 的默认配置文件
  */
 module.exports = {

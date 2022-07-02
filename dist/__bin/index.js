@@ -40,7 +40,7 @@ switch (true) {
         console.log(chalk_1.default.green('   -d --demo ') + chalk_1.default.gray('同步时需要再次确定才会真正同步，在重要场合加上这个参数可以防止出错'));
         console.log(chalk_1.default.yellow('sfs的使用方式：'));
         console.log(chalk_1.default.gray('    完整命令为server-file-sync，快捷命令为sfs'));
-        console.log(chalk_1.default.gray('    默认自定义配置是当前工具执行路径下的sfs.config.js文件'));
+        console.log(chalk_1.default.gray('    默认自定义配置是当前工具执行路径下的sfs.config.js文件，可以执行sfs -i 快速生成配置文件'));
         break;
     case Boolean(opts.init):
         fs_1.default.createReadStream(path_1.default.join(__dirname, '../../config.js')).pipe(fs_1.default.createWriteStream(path_1.default.join(process.cwd(), cuConfigName)));

@@ -7,6 +7,16 @@ import { getComPath } from "./utils/getComPath";
 const readline = require('readline');
 
 /**
+ * 获取配置
+ * 主要是为外界提供ts的能力
+ * @param c 
+ * @returns 
+ */
+export function getConfig(c: IConfig): IConfig {
+    return c;
+}
+
+/**
  * 开始服务
  */
 export function start(config: IConfig, keys?: string[], demo = false) {
@@ -47,13 +57,12 @@ export function start(config: IConfig, keys?: string[], demo = false) {
         return;
     }
     if (!config.privateKey) {
-        console.log(chalk.red('请配置ssh私钥!'));
+        console.log(chalk.yellow('建议通过配置ssh私钥的方式来连接服务器!'));
         console.log('配置ssh的方法：');
         console.log(chalk.gray('1.命令行执行 ssh-keygen -f <文件名> 然后按照提示输入<密码>，完成后会在当前执行目录生成两个文件，不带.pub的是<私钥>，带.pub的是<公钥>'));
         console.log(chalk.gray('2.把<公钥>中的内容追加到服务器的/root/.ssh/authorized_keys文件中'));
         console.log(chalk.gray('3.把<密码>和<私钥>的内容分别添加到配置文件的字段passphrase和privateKey中就行了'));
         console.log(chalk.red('注意：私钥不要加到项目的版本控制系统中'));
-        return;
     }
     //
     start_(config);

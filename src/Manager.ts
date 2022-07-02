@@ -1,4 +1,4 @@
-import { Client, SFTPWrapper } from "ssh2";
+import { Client, ConnectConfig, SFTPWrapper } from "ssh2";
 import { type Matcher } from 'anymatch';
 import ssh2 from "ssh2";
 import chalk from "chalk";
@@ -12,15 +12,15 @@ export interface IConfig {
     /** 配置名字 */
     name: string;
     /** 主机地址 */
-    host: string,
+    host?: string,
     /** 端口号 */
-    port: number,
+    port?: number,
     /** 用户名 */
-    username: string,
+    username?: string,
     /** 私钥密码 */
-    passphrase: string;
+    passphrase?: string;
     /** 私钥字符串 */
-    privateKey: string;
+    privateKey?: string;
     /** 同步列表 */
     syncList: {
         /** key */
@@ -37,6 +37,8 @@ export interface IConfig {
             ignored?: Matcher;
         }[],
     }[];
+    /** ssh2的连接配置 */
+    connectConfig?: ConnectConfig,
     /** 是否监听 */
     watch: boolean;
     /** 更新回调 */
@@ -103,6 +105,7 @@ export class Manager {
                 username: this.mainConfig.username,
                 privateKey: this.mainConfig.privateKey,
                 passphrase: this.mainConfig.passphrase,
+                ...this.mainConfig.connectConfig,
             });
         })
     }

@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.start = void 0;
+exports.start = exports.getConfig = void 0;
 var Manager_1 = require("./Manager");
 var chalk_1 = __importDefault(require("chalk"));
 var syncDF_1 = require("./syncDF");
@@ -47,6 +47,16 @@ var getAbsolute_1 = require("./utils/getAbsolute");
 var watchDf_1 = require("./watchDf");
 var getComPath_1 = require("./utils/getComPath");
 var readline = require('readline');
+/**
+ * 获取配置
+ * 主要是为外界提供ts的能力
+ * @param c
+ * @returns
+ */
+function getConfig(c) {
+    return c;
+}
+exports.getConfig = getConfig;
 /**
  * 开始服务
  */
@@ -91,13 +101,12 @@ function start(config, keys, demo) {
         return;
     }
     if (!config.privateKey) {
-        console.log(chalk_1.default.red('请配置ssh私钥!'));
+        console.log(chalk_1.default.yellow('建议通过配置ssh私钥的方式来连接服务器!'));
         console.log('配置ssh的方法：');
         console.log(chalk_1.default.gray('1.命令行执行 ssh-keygen -f <文件名> 然后按照提示输入<密码>，完成后会在当前执行目录生成两个文件，不带.pub的是<私钥>，带.pub的是<公钥>'));
         console.log(chalk_1.default.gray('2.把<公钥>中的内容追加到服务器的/root/.ssh/authorized_keys文件中'));
         console.log(chalk_1.default.gray('3.把<密码>和<私钥>的内容分别添加到配置文件的字段passphrase和privateKey中就行了'));
         console.log(chalk_1.default.red('注意：私钥不要加到项目的版本控制系统中'));
-        return;
     }
     //
     start_(config);

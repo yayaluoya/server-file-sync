@@ -1,11 +1,12 @@
 const { readFileSync } = require("fs");
 const path = require("path");
 const { join } = require("path");
+const { getConfig } = require("server-file-sync");
 
 /**
  * server-file-sync 的默认配置文件
  */
-module.exports = {
+module.exports = getConfig({
     name: '自定义配置',
     /** 主机地址 */
     host: '47.94.233.236',
@@ -53,7 +54,7 @@ module.exports = {
             });
         })
     }
-}
+});
 
 // /** 同步列表 */
 // syncList: {

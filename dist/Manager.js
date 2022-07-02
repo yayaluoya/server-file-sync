@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -90,13 +101,7 @@ var Manager = /** @class */ (function () {
             conn.on('ready', function () {
                 console.log(chalk_1.default.blue("\n\u670D\u52A1\u5668\u8FDE\u63A5\u6210\u529F".concat(alert ? '@' + alert : '', "\n")));
                 r(conn);
-            }).connect({
-                host: _this.mainConfig.host,
-                port: _this.mainConfig.port,
-                username: _this.mainConfig.username,
-                privateKey: _this.mainConfig.privateKey,
-                passphrase: _this.mainConfig.passphrase,
-            });
+            }).connect(__assign({ host: _this.mainConfig.host, port: _this.mainConfig.port, username: _this.mainConfig.username, privateKey: _this.mainConfig.privateKey, passphrase: _this.mainConfig.passphrase }, _this.mainConfig.connectConfig));
         });
     };
     /**
