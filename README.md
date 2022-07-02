@@ -13,7 +13,7 @@
 sfs -h 查看所有命令和使用方式
 
 #### 连接方式
-- 本工具只支持ssh密钥的连接方式，因为这个是最安全的。
+- 建议通过ssh密钥的连接方式，因为这个是最安全的，如果直接用密码连接万一泄露了就麻烦了。
 
 - 首先在某个目录下执行 ssh-keygen -f <fileName>生成一对密钥（期间会提示你输密码），不带pub的是私钥带pub的是公共密钥，你要把公钥的内容添加到服务器的/root/.ssh/authorized_keys文件中，然后把私钥和对应的密码添加进本工具的配置文件中（具体字段见配置文件），这时就能连接到服务器并同步文件了。
 
@@ -26,20 +26,23 @@ sfs -h 查看所有命令和使用方式
  * 配置文件类型
  */
 import { type Matcher } from 'anymatch';
-import { Client, SFTPWrapper } from "ssh2";
-export interface IConfig {
+import { Client, SFTPWrapper, ConnectConfig } from "ssh2";
+/**
+ * 配置文件类型
+ */
+interface IConfig {
     /** 配置名字 */
     name: string;
     /** 主机地址 */
-    host: string,
+    host?: string,
     /** 端口号 */
-    port: number,
+    port?: number,
     /** 用户名 */
-    username: string,
+    username?: string,
     /** 私钥密码 */
-    passphrase: string;
+    passphrase?: string;
     /** 私钥字符串 */
-    privateKey: string;
+    privateKey?: string;
     /** 同步列表 */
     syncList: {
         /** key */
@@ -56,11 +59,13 @@ export interface IConfig {
             ignored?: Matcher;
         }[],
     }[];
+    /** ssh2的连接配置 */
+    connectConfig?: ConnectConfig,
     /** 是否监听 */
     watch: boolean;
     /** 更新回调 */
     updateF?: (op: {
-        conn: () => Promise<Client>;
+        connF: () => Promise<Client>;
         sftp: SFTPWrapper;
     }, key: string) => Promise<any>;
 }
