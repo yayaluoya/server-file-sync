@@ -136,7 +136,7 @@ var Manager = /** @class */ (function () {
         return new Promise(function (r, e) {
             //假连接就不传
             if (_this._false) {
-                console.log(chalk_1.default.magenta('同步演示'), _path, chalk_1.default.gray('->'), chalk_1.default.green((0, getComPath_1.getComPath)(_remotePath)), chalk_1.default.gray((0, moment_1.default)().format('HH:mm:ss')));
+                console.log(chalk_1.default.hex('#eebb4d')('同步演示'), _path, chalk_1.default.gray('-->'), chalk_1.default.green((0, getComPath_1.getComPath)(_remotePath)), chalk_1.default.gray((0, moment_1.default)().format('HH:mm:ss')));
                 r();
                 return;
             }
@@ -148,7 +148,7 @@ var Manager = /** @class */ (function () {
                         e(err);
                         return [2 /*return*/];
                     }
-                    console.log(chalk_1.default.gray('同步成功'), _path, chalk_1.default.gray('->'), chalk_1.default.green((0, getComPath_1.getComPath)(_remotePath)), chalk_1.default.gray((0, moment_1.default)().format('HH:mm:ss')));
+                    console.log(chalk_1.default.gray('同步成功'), _path, chalk_1.default.gray('-->'), chalk_1.default.green((0, getComPath_1.getComPath)(_remotePath)), chalk_1.default.gray((0, moment_1.default)().format('HH:mm:ss')));
                     r();
                     return [2 /*return*/];
                 });

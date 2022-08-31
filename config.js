@@ -22,20 +22,24 @@ module.exports = {
     privateKey: '',
     /** 同步列表 */
     syncList: [
-        // /** key */
-        // key: string;
-        // /** 标题 */
-        // title: string;
-        // /** 路径列表 */
-        // paths: {
-        //     /** 本地地址 */
-        //     local: string;
-        //     /** 远程地址 */
-        //     remote: string;
-        //     /** 文件忽略，请注意不支持 Windows 样式的反斜杠作为分隔符*/
-        //     /** import { type Matcher } from 'anymatch'; */
-        //     ignored: Matcher;
-        // }[],
+        // {
+        //     /** key */
+        //     key: '',
+        //     /** 标题 */
+        //     title: '',
+        //     /** 路径列表 */
+        //     paths: [
+        //         {
+        //             /** 本地地址 */
+        //             local: '',
+        //             /** 远程地址 */
+        //             remote: '',
+        //             /** 文件忽略，请注意不支持 Windows 样式的反斜杠作为分隔符*/
+        //             /** import { type Matcher } from 'anymatch'; */
+        //             ignored: null,
+        //         },
+        //     ],
+        // }
     ],
     /** 是否监听 */
     watch: false,

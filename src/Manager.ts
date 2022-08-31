@@ -131,7 +131,7 @@ export class Manager {
         return new Promise<void>((r, e) => {
             //假连接就不传
             if (this._false) {
-                console.log(chalk.magenta('同步演示'), _path, chalk.gray('->'), chalk.green(getComPath(_remotePath)), chalk.gray(moment().format('HH:mm:ss')));
+                console.log(chalk.hex('#eebb4d')('同步演示'), _path, chalk.gray('-->'), chalk.green(getComPath(_remotePath)), chalk.gray(moment().format('HH:mm:ss')));
                 r();
                 return;
             }
@@ -142,7 +142,7 @@ export class Manager {
                     e(err);
                     return;
                 }
-                console.log(chalk.gray('同步成功'), _path, chalk.gray('->'), chalk.green(getComPath(_remotePath)), chalk.gray(moment().format('HH:mm:ss')));
+                console.log(chalk.gray('同步成功'), _path, chalk.gray('-->'), chalk.green(getComPath(_remotePath)), chalk.gray(moment().format('HH:mm:ss')));
                 r();
             });
         })

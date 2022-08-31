@@ -46,7 +46,8 @@ var syncDF_1 = require("./syncDF");
 var getAbsolute_1 = require("./utils/getAbsolute");
 var watchDf_1 = require("./watchDf");
 var getComPath_1 = require("./utils/getComPath");
-var readline = require('readline');
+var ArrayUtils_1 = require("yayaluoya-tool/dist/ArrayUtils");
+var secondCom_1 = require("./utils/secondCom");
 /**
  * 获取配置
  * 主要是为外界提供ts的能力
@@ -62,14 +63,19 @@ exports.getConfig = getConfig;
  */
 function start(config, keys, demo) {
     if (demo === void 0) { demo = false; }
+    //TODO 防😳
+    config.syncList = ArrayUtils_1.ArrayUtils.arraify(config.syncList);
+    config.syncList.forEach(function (_) {
+        _.paths = ArrayUtils_1.ArrayUtils.arraify(_.paths);
+    });
     //对config中的列表做判断
     if (keys && keys.length > 0) {
         config.syncList = config.syncList.filter(function (_) {
             return keys.includes(_.key);
         });
     }
-    if (!config.syncList || config.syncList.length == 0) {
-        console.log(chalk_1.default.red('没有需要同步的内容，请在配置syncList中添加需要同步的列表'));
+    if (config.syncList.length <= 0) {
+        console.log(chalk_1.default.red('没有需要同步的内容，请在配置syncList中添加需要同步的列表，或者 -s 的参数没传对'));
         return;
     }
     //如果是演示的话需要再次确定
@@ -78,16 +84,10 @@ function start(config, keys, demo) {
             var _b = _a[_i], key = _b.key, title = _b.title, paths = _b.paths;
             for (var _c = 0, paths_1 = paths; _c < paths_1.length; _c++) {
                 var _d = paths_1[_c], local = _d.local, remote = _d.remote;
-                console.log(chalk_1.default.yellow("\u540C\u6B65->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " -> ").concat((0, getComPath_1.getComPath)(remote), "\n")));
+                console.log(chalk_1.default.yellow("\u540C\u6B65\u6F14\u793A->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " -> ").concat((0, getComPath_1.getComPath)(remote))));
             }
         }
-        var rl_1 = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout
-        });
-        // ask user for the anme input
-        rl_1.question(chalk_1.default.cyan('上传:y/Y,演示:d/D 输入其它字符取消: '), function (name) {
-            rl_1.close();
+        (0, secondCom_1.secondCom)('上传:y/Y,演示:d/D 输入其它字符取消: ').then(function (name) {
             switch (true) {
                 /** 上传 */
                 case /^y$/i.test(name):
@@ -101,12 +101,12 @@ function start(config, keys, demo) {
         return;
     }
     if (!config.privateKey) {
-        console.log(chalk_1.default.yellow('建议通过配置ssh私钥的方式来连接服务器!'));
-        console.log('配置ssh的方法：');
+        console.log('⚠️ ', chalk_1.default.yellow('建议通过配置ssh私钥的方式来连接服务器!'));
+        console.log(chalk_1.default.gray('配置ssh的方法：'));
         console.log(chalk_1.default.gray('1.命令行执行 ssh-keygen -f <文件名> 然后按照提示输入<密码>，完成后会在当前执行目录生成两个文件，不带.pub的是<私钥>，带.pub的是<公钥>'));
         console.log(chalk_1.default.gray('2.把<公钥>中的内容追加到服务器的/root/.ssh/authorized_keys文件中'));
         console.log(chalk_1.default.gray('3.把<密码>和<私钥>的内容分别添加到配置文件的字段passphrase和privateKey中就行了'));
-        console.log(chalk_1.default.red('注意：私钥不要加到项目的版本控制系统中'));
+        console.log(chalk_1.default.red('注意：私钥不要加到项目的版本控制系统中，防止泄露'));
     }
     //
     start_(config);
@@ -138,7 +138,8 @@ function start_(config, _false) {
                     case 2:
                         if (!(_d < paths_2.length)) return [3 /*break*/, 5];
                         _e = paths_2[_d], local = _e.local, remote = _e.remote, ignored = _e.ignored;
-                        console.log(chalk_1.default.yellow("\u76D1\u542C->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " -> ").concat((0, getComPath_1.getComPath)(remote), "\n")));
+                        console.log(chalk_1.default.hex('#fddb3a')("\u76D1\u542C->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " --> ").concat((0, getComPath_1.getComPath)(remote))));
+                        console.log(chalk_1.default.gray('---->'));
                         return [4 /*yield*/, (0, watchDf_1.watchDf)(key, (0, getAbsolute_1.getAbsolute)(local), (0, getComPath_1.getComPath)(remote), {
                                 ignored: ignored,
                             })];
@@ -163,7 +164,8 @@ function start_(config, _false) {
                     case 9:
                         if (!(_j < paths_3.length)) return [3 /*break*/, 12];
                         _k = paths_3[_j], local = _k.local, remote = _k.remote, ignored = _k.ignored;
-                        console.log(chalk_1.default.yellow("\u540C\u6B65->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " -> ").concat((0, getComPath_1.getComPath)(remote), "\n")));
+                        console.log(chalk_1.default.hex('#fddb3a')("\u540C\u6B65->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " --> ").concat((0, getComPath_1.getComPath)(remote))));
+                        console.log(chalk_1.default.gray('---->'));
                         //同步
                         return [4 /*yield*/, (0, syncDF_1.syncDF)((0, getAbsolute_1.getAbsolute)(local), (0, getComPath_1.getComPath)(remote), ignored)];
                     case 10:
@@ -185,7 +187,7 @@ function start_(config, _false) {
                         return [3 /*break*/, 8];
                     case 15:
                         //关闭连接
-                        console.log(chalk_1.default.green('\n同步完成'));
+                        console.log(chalk_1.default.hex('#81b214')('\n同步完成'));
                         conn.end();
                         _l.label = 16;
                     case 16: return [2 /*return*/];

@@ -4,7 +4,7 @@
   "description": "",
   "main": "sfs.config.js",
   "scripts": {
-    "sync": "sfs"
+    "sync": "sfs -d"
   },
   "author": "",
   "license": "ISC",
