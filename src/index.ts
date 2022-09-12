@@ -38,6 +38,18 @@ export function start(config: IConfig, keys?: string[], demo = false) {
         return;
     }
 
+    console.log('同步列表:');
+    console.dir(config.syncList.map(_ => {
+        let { key, title, paths } = _;
+        return {
+            key,
+            title,
+            pathLenth: paths.length,
+        };
+    }), {
+        depth: null,
+    });
+
     //如果是演示的话需要再次确定
     if (demo) {
         for (let { key, title, paths } of config.syncList) {

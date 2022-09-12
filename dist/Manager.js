@@ -55,6 +55,7 @@ var ssh2_1 = __importDefault(require("ssh2"));
 var chalk_1 = __importDefault(require("chalk"));
 var getComPath_1 = require("./utils/getComPath");
 var moment_1 = __importDefault(require("moment"));
+var fs_1 = __importDefault(require("fs"));
 /**
  * 管理器
  */
@@ -136,7 +137,8 @@ var Manager = /** @class */ (function () {
         return new Promise(function (r, e) {
             //假连接就不传
             if (_this._false) {
-                console.log(chalk_1.default.hex('#eebb4d')('同步演示'), _path, chalk_1.default.gray('-->'), chalk_1.default.green((0, getComPath_1.getComPath)(_remotePath)), chalk_1.default.gray((0, moment_1.default)().format('HH:mm:ss')));
+                var fileState = fs_1.default.statSync(_path);
+                console.log(chalk_1.default.hex('#eebb4d')('同步演示'), _path, fileState.size / 1000 + 'KB', chalk_1.default.gray('-->'), chalk_1.default.green((0, getComPath_1.getComPath)(_remotePath)), chalk_1.default.gray((0, moment_1.default)().format('HH:mm:ss')));
                 r();
                 return;
             }

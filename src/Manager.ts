@@ -4,6 +4,7 @@ import ssh2 from "ssh2";
 import chalk from "chalk";
 import { getComPath } from "./utils/getComPath";
 import moment from "moment";
+import fs from "fs";
 
 /**
  * 配置文件类型
@@ -131,7 +132,8 @@ export class Manager {
         return new Promise<void>((r, e) => {
             //假连接就不传
             if (this._false) {
-                console.log(chalk.hex('#eebb4d')('同步演示'), _path, chalk.gray('-->'), chalk.green(getComPath(_remotePath)), chalk.gray(moment().format('HH:mm:ss')));
+                let fileState = fs.statSync(_path);
+                console.log(chalk.hex('#eebb4d')('同步演示'), _path, fileState.size / 1000 + 'KB', chalk.gray('-->'), chalk.green(getComPath(_remotePath)), chalk.gray(moment().format('HH:mm:ss')));
                 r();
                 return;
             }

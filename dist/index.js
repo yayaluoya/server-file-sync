@@ -78,6 +78,17 @@ function start(config, keys, demo) {
         console.log(chalk_1.default.red('没有需要同步的内容，请在配置syncList中添加需要同步的列表，或者 -s 的参数没传对'));
         return;
     }
+    console.log('同步列表:');
+    console.dir(config.syncList.map(function (_) {
+        var key = _.key, title = _.title, paths = _.paths;
+        return {
+            key: key,
+            title: title,
+            pathLenth: paths.length,
+        };
+    }), {
+        depth: null,
+    });
     //如果是演示的话需要再次确定
     if (demo) {
         for (var _i = 0, _a = config.syncList; _i < _a.length; _i++) {
