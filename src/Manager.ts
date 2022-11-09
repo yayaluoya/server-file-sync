@@ -52,7 +52,7 @@ export class Manager {
             }
             try {
                 conn.connect(op).on('ready', () => {
-                    title && console.log(chalk.blue(`\n服务器连接成功${title ? '@' + title : ''}\n`));
+                    title && console.log(chalk.blue(`\n服务器连接成功${title ? ':' + title : ''}\n`));
                     r(conn);
                 }).on('error', errF);
             } catch (err) {
@@ -75,7 +75,7 @@ export class Manager {
                 //建立sftp连接
                 conn.sftp((err, sftp) => {
                     if (err) {
-                        title && console.log(chalk.red(`sftp连接失败!${title ? '@' + title : ''}\n`), err);
+                        title && console.log(chalk.red(`sftp连接失败!${title ? ':' + title : ''}\n`), err);
                         e();
                         return;
                     }
@@ -94,7 +94,7 @@ export class Manager {
     static async updateF(key: string) {
         await (this._false || this.mainConfig.updateF?.({
             connF: () => {
-                return this.getConn('更新回调');
+                return this.getConn('updateF');
             },
         }, key).catch((e) => {
             console.log(chalk.red('执行更新回调出错:'), e);

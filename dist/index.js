@@ -61,7 +61,7 @@ var ArrayUtils_1 = require("yayaluoya-tool/dist/ArrayUtils");
 var IConfig_1 = require("./config/IConfig");
 var cmdSecondCom_1 = require("yayaluoya-tool/dist/node/cmdSecondCom");
 /**
- * 开始服务
+ * 开始
  */
 function start(config, keys, demo) {
     if (demo === void 0) { demo = false; }
@@ -80,7 +80,7 @@ function start(config, keys, demo) {
         console.log(chalk_1.default.red('没有需要同步的内容，请在配置syncList中添加需要同步的列表，或者 -s 的参数没传对'));
         return;
     }
-    console.log('同步列表:');
+    console.log('需要同步的列表:');
     console.dir(config.syncList.map(function (_) {
         var key = _.key, title = _.title, paths = _.paths;
         return {
@@ -127,7 +127,8 @@ function start(config, keys, demo) {
 exports.start = start;
 /**
  * 上传
- * @param config
+ * @param config 配置信息
+ * @param _false 是否假传
  */
 function upload(config, _false) {
     if (_false === void 0) { _false = false; }

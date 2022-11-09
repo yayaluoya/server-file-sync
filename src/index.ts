@@ -7,10 +7,9 @@ import { getComPath } from "./utils/getComPath";
 import { ArrayUtils } from "yayaluoya-tool/dist/ArrayUtils";
 import { getConnectConfig, TConfig } from "./config/IConfig";
 import { cmdSecondCom } from "yayaluoya-tool/dist/node/cmdSecondCom";
-import { Client, SFTPWrapper } from "ssh2";
 
 /**
- * 开始服务
+ * 开始
  */
 export function start(config: TConfig, keys?: string[], demo = false) {
     //TODO 防😳
@@ -30,7 +29,7 @@ export function start(config: TConfig, keys?: string[], demo = false) {
         return;
     }
 
-    console.log('同步列表:');
+    console.log('需要同步的列表:');
     console.dir(config.syncList.map(_ => {
         let { key, title, paths } = _;
         return {
@@ -76,7 +75,8 @@ export function start(config: TConfig, keys?: string[], demo = false) {
 
 /**
  * 上传
- * @param config 
+ * @param config 配置信息
+ * @param _false 是否假传
  */
 export async function upload(config: TConfig, _false = false) {
     Manager.start(config, _false);

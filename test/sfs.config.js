@@ -35,12 +35,12 @@ module.exports = getConfig({
             title: '测试的项目',
             paths: [
                 {
-                    local: './dist',
+                    local: join(__dirname, './dist'),
                     remote: '/www/test/sfs-test',
                     ignored: path.join(__dirname, './dist/a/**').replace(/\\+/g, '/'),
                 },
                 {
-                    local: './dist/hh.html',
+                    local: join(__dirname, './dist/hh.html'),
                     remote: '/www/test/sfs-test2/hh.html',
                 },
             ],

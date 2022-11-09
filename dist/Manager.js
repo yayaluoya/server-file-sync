@@ -96,7 +96,7 @@ var Manager = /** @class */ (function () {
             };
             try {
                 conn.connect(op).on('ready', function () {
-                    title && console.log(chalk_1.default.blue("\n\u670D\u52A1\u5668\u8FDE\u63A5\u6210\u529F".concat(title ? '@' + title : '', "\n")));
+                    title && console.log(chalk_1.default.blue("\n\u670D\u52A1\u5668\u8FDE\u63A5\u6210\u529F".concat(title ? ':' + title : '', "\n")));
                     r(conn);
                 }).on('error', errF);
             }
@@ -117,7 +117,7 @@ var Manager = /** @class */ (function () {
                 //建立sftp连接
                 conn.sftp(function (err, sftp) {
                     if (err) {
-                        title && console.log(chalk_1.default.red("sftp\u8FDE\u63A5\u5931\u8D25!".concat(title ? '@' + title : '', "\n")), err);
+                        title && console.log(chalk_1.default.red("sftp\u8FDE\u63A5\u5931\u8D25!".concat(title ? ':' + title : '', "\n")), err);
                         e();
                         return;
                     }
@@ -140,7 +140,7 @@ var Manager = /** @class */ (function () {
                 switch (_c.label) {
                     case 0: return [4 /*yield*/, (this._false || ((_b = (_a = this.mainConfig).updateF) === null || _b === void 0 ? void 0 : _b.call(_a, {
                             connF: function () {
-                                return _this.getConn('更新回调');
+                                return _this.getConn('updateF');
                             },
                         }, key).catch(function (e) {
                             console.log(chalk_1.default.red('执行更新回调出错:'), e);

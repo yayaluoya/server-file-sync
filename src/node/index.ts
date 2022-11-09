@@ -1,6 +1,6 @@
 import { ObjectUtils } from "yayaluoya-tool/dist/obj/ObjectUtils";
 import { TConfig } from "../config/IConfig";
-import { upload as upload_ } from "../index";
+import { start } from "../index";
 import { defaultConfig as defaultConfig_ } from "../config/getConfig";
 
 /**
@@ -14,13 +14,14 @@ export function getConfig(c: TConfig): TConfig | Promise<TConfig> {
 }
 
 /**
- * 上传
+ * 开始同步
  * TODO 配置信息中有多少就传多少
+ * TODO 注意配置中的地址要为绝对地址哦
  * @param config 
  */
-export async function upload(config: TConfig) {
+export async function startSync(config: TConfig, keys?: string[], demo = false) {
     /** 一个克隆的默认配置 */
     const defaultConfig = ObjectUtils.clone2(await defaultConfig_);
     //
-    upload_(ObjectUtils.merge(defaultConfig, config));
+    start(ObjectUtils.merge(defaultConfig, config), keys, demo);
 }

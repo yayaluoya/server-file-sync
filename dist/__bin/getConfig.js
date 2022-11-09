@@ -1,1 +1,0 @@
-//# sourceMappingURL=getConfig.js.map

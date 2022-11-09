@@ -1,5 +1,5 @@
 import { Matcher } from "anymatch";
-import { Client, ConnectConfig, SFTPWrapper } from "ssh2";
+import { Client, ConnectConfig } from "ssh2";
 
 /** 基础连接配置 */
 export type TConnectConfig = Pick<ConnectConfig, 'host' | 'port' | 'username' | 'passphrase' | 'privateKey'>

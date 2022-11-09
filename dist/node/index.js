@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.upload = exports.getConfig = void 0;
+exports.startSync = exports.getConfig = void 0;
 var ObjectUtils_1 = require("yayaluoya-tool/dist/obj/ObjectUtils");
 var index_1 = require("../index");
 var getConfig_1 = require("../config/getConfig");
@@ -51,11 +51,13 @@ function getConfig(c) {
 }
 exports.getConfig = getConfig;
 /**
- * 上传
+ * 开始同步
  * TODO 配置信息中有多少就传多少
+ * TODO 注意配置中的地址要为绝对地址哦
  * @param config
  */
-function upload(config) {
+function startSync(config, keys, demo) {
+    if (demo === void 0) { demo = false; }
     return __awaiter(this, void 0, void 0, function () {
         var defaultConfig, _a, _b;
         return __generator(this, function (_c) {
@@ -66,11 +68,11 @@ function upload(config) {
                 case 1:
                     defaultConfig = _b.apply(_a, [_c.sent()]);
                     //
-                    (0, index_1.upload)(ObjectUtils_1.ObjectUtils.merge(defaultConfig, config));
+                    (0, index_1.start)(ObjectUtils_1.ObjectUtils.merge(defaultConfig, config), keys, demo);
                     return [2 /*return*/];
             }
         });
     });
 }
-exports.upload = upload;
+exports.startSync = startSync;
 //# sourceMappingURL=index.js.map

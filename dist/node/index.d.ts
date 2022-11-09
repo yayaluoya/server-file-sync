@@ -7,9 +7,10 @@ import { TConfig } from "../config/IConfig";
  */
 export declare function getConfig(c: TConfig): TConfig | Promise<TConfig>;
 /**
- * 上传
+ * 开始同步
  * TODO 配置信息中有多少就传多少
+ * TODO 注意配置中的地址要为绝对地址哦
  * @param config
  */
-export declare function upload(config: TConfig): Promise<void>;
+export declare function startSync(config: TConfig, keys?: string[], demo?: boolean): Promise<void>;
 //# sourceMappingURL=index.d.ts.map
