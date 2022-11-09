@@ -16,6 +16,9 @@ var Vue2Plugin = /** @class */ (function () {
         var _this = this;
         // 编译完成后的回调
         compiler.plugin('done', function () {
+            if (_this.keys.length <= 0) {
+                return;
+            }
             (0, _1.startSync)(_this.config, _this.keys, _this.demo);
         });
     };

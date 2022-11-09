@@ -7,13 +7,16 @@ import { TConfig } from "../config/IConfig";
 export class Vue2Plugin {
     constructor(
         private config: TConfig,
-        private keys?: string[],
+        private keys: string[],
         private demo = false
     ) { }
 
     apply(compiler: any) {
         // 编译完成后的回调
         compiler.plugin('done', () => {
+            if (this.keys.length <= 0) {
+                return;
+            }
             startSync(this.config, this.keys, this.demo);
         });
     }
