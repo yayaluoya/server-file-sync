@@ -1,0 +1,1 @@
+//# sourceMappingURL=getConfig.d.ts.map

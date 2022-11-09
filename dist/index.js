@@ -35,11 +35,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.start = exports.getConfig = void 0;
+exports.upload = exports.start = void 0;
 var Manager_1 = require("./Manager");
 var chalk_1 = __importDefault(require("chalk"));
 var syncDF_1 = require("./syncDF");
@@ -47,24 +58,15 @@ var getAbsolute_1 = require("./utils/getAbsolute");
 var watchDf_1 = require("./watchDf");
 var getComPath_1 = require("./utils/getComPath");
 var ArrayUtils_1 = require("yayaluoya-tool/dist/ArrayUtils");
-var secondCom_1 = require("./utils/secondCom");
-/**
- * 获取配置
- * 主要是为外界提供ts的能力
- * @param c
- * @returns
- */
-function getConfig(c) {
-    return c;
-}
-exports.getConfig = getConfig;
+var IConfig_1 = require("./config/IConfig");
+var cmdSecondCom_1 = require("yayaluoya-tool/dist/node/cmdSecondCom");
 /**
  * 开始服务
  */
 function start(config, keys, demo) {
     if (demo === void 0) { demo = false; }
     //TODO 防😳
-    config.syncList = ArrayUtils_1.ArrayUtils.arraify(config.syncList);
+    config.syncList = ArrayUtils_1.ArrayUtils.arraify(config.syncList || []);
     config.syncList.forEach(function (_) {
         _.paths = ArrayUtils_1.ArrayUtils.arraify(_.paths);
     });
@@ -98,15 +100,15 @@ function start(config, keys, demo) {
                 console.log(chalk_1.default.yellow("\u540C\u6B65\u6F14\u793A->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " -> ").concat((0, getComPath_1.getComPath)(remote))));
             }
         }
-        (0, secondCom_1.secondCom)('上传:y/Y,演示:d/D 输入其它字符取消: ').then(function (name) {
+        (0, cmdSecondCom_1.cmdSecondCom)('上传:y/Y,演示:d/D 输入其它字符取消: ').then(function (name) {
             switch (true) {
                 /** 上传 */
                 case /^y$/i.test(name):
-                    start_(config);
+                    upload(config);
                     break;
                 /** 演示 */
                 case /^d$/i.test(name):
-                    start_(config, true);
+                    upload(config, true);
             }
         });
         return;
@@ -120,91 +122,103 @@ function start(config, keys, demo) {
         console.log(chalk_1.default.red('注意：私钥不要加到项目的版本控制系统中，防止泄露'));
     }
     //
-    start_(config);
+    upload(config);
 }
 exports.start = start;
 /**
- * 正式启动
+ * 上传
  * @param config
  */
-function start_(config, _false) {
-    var _this = this;
+function upload(config, _false) {
     if (_false === void 0) { _false = false; }
-    //
-    Manager_1.Manager.connect(config, _false).then(function (_a) {
-        var conn = _a.conn, sftp = _a.sftp;
-        return __awaiter(_this, void 0, void 0, function () {
-            var _i, _b, _c, key, title, paths, _d, paths_2, _e, local, remote, ignored, _f, _g, _h, key, title, paths, _j, paths_3, _k, local, remote, ignored;
-            return __generator(this, function (_l) {
-                switch (_l.label) {
-                    case 0:
-                        if (!config.watch) return [3 /*break*/, 7];
-                        _i = 0, _b = config.syncList;
-                        _l.label = 1;
-                    case 1:
-                        if (!(_i < _b.length)) return [3 /*break*/, 6];
-                        _c = _b[_i], key = _c.key, title = _c.title, paths = _c.paths;
-                        _d = 0, paths_2 = paths;
-                        _l.label = 2;
-                    case 2:
-                        if (!(_d < paths_2.length)) return [3 /*break*/, 5];
-                        _e = paths_2[_d], local = _e.local, remote = _e.remote, ignored = _e.ignored;
-                        console.log(chalk_1.default.hex('#fddb3a')("\u76D1\u542C->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " --> ").concat((0, getComPath_1.getComPath)(remote))));
-                        console.log(chalk_1.default.gray('---->'));
-                        return [4 /*yield*/, (0, watchDf_1.watchDf)(key, (0, getAbsolute_1.getAbsolute)(local), (0, getComPath_1.getComPath)(remote), {
-                                ignored: ignored,
-                            })];
-                    case 3:
-                        _l.sent();
-                        _l.label = 4;
-                    case 4:
-                        _d++;
-                        return [3 /*break*/, 2];
-                    case 5:
-                        _i++;
-                        return [3 /*break*/, 1];
-                    case 6: return [3 /*break*/, 16];
-                    case 7:
-                        _f = 0, _g = config.syncList;
-                        _l.label = 8;
-                    case 8:
-                        if (!(_f < _g.length)) return [3 /*break*/, 15];
-                        _h = _g[_f], key = _h.key, title = _h.title, paths = _h.paths;
-                        _j = 0, paths_3 = paths;
-                        _l.label = 9;
-                    case 9:
-                        if (!(_j < paths_3.length)) return [3 /*break*/, 12];
-                        _k = paths_3[_j], local = _k.local, remote = _k.remote, ignored = _k.ignored;
-                        console.log(chalk_1.default.hex('#fddb3a')("\u540C\u6B65->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " --> ").concat((0, getComPath_1.getComPath)(remote))));
-                        console.log(chalk_1.default.gray('---->'));
-                        //同步
-                        return [4 /*yield*/, (0, syncDF_1.syncDF)((0, getAbsolute_1.getAbsolute)(local), (0, getComPath_1.getComPath)(remote), ignored)];
-                    case 10:
-                        //同步
-                        _l.sent();
-                        _l.label = 11;
-                    case 11:
-                        _j++;
-                        return [3 /*break*/, 9];
-                    case 12: 
-                    //触发更新回调
-                    return [4 /*yield*/, Manager_1.Manager.updateF(key)];
-                    case 13:
-                        //触发更新回调
-                        _l.sent();
-                        _l.label = 14;
-                    case 14:
-                        _f++;
-                        return [3 /*break*/, 8];
-                    case 15:
-                        //关闭连接
-                        console.log(chalk_1.default.hex('#81b214')('\n同步完成'));
-                        conn.end();
-                        _l.label = 16;
-                    case 16: return [2 /*return*/];
-                }
-            });
+    return __awaiter(this, void 0, void 0, function () {
+        var _loop_1, _i, _a, _b, allP, _loop_2, _c, _d, _e;
+        var _this = this;
+        return __generator(this, function (_f) {
+            switch (_f.label) {
+                case 0:
+                    Manager_1.Manager.start(config, _false);
+                    if (!config.watch) return [3 /*break*/, 1];
+                    _loop_1 = function (_b) {
+                        var key = _b.key, title = _b.title, paths = _b.paths, connectConfig = __rest(_b, ["key", "title", "paths"]);
+                        Manager_1.Manager.getSftp(undefined, (0, IConfig_1.getConnectConfig)(connectConfig)).then(function (_a) {
+                            var conn = _a.conn, sftp = _a.sftp;
+                            return __awaiter(_this, void 0, void 0, function () {
+                                var _i, paths_2, _b, local, remote, ignored;
+                                return __generator(this, function (_c) {
+                                    for (_i = 0, paths_2 = paths; _i < paths_2.length; _i++) {
+                                        _b = paths_2[_i], local = _b.local, remote = _b.remote, ignored = _b.ignored;
+                                        console.log(chalk_1.default.hex('#fddb3a')("\u76D1\u542C->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " --> ").concat((0, getComPath_1.getComPath)(remote))));
+                                        console.log(chalk_1.default.gray('---->'));
+                                        (0, watchDf_1.watchDf)(key, (0, getAbsolute_1.getAbsolute)(local), (0, getComPath_1.getComPath)(remote), {
+                                            ignored: ignored,
+                                        }, sftp);
+                                    }
+                                    return [2 /*return*/];
+                                });
+                            });
+                        });
+                    };
+                    for (_i = 0, _a = config.syncList; _i < _a.length; _i++) {
+                        _b = _a[_i];
+                        _loop_1(_b);
+                    }
+                    return [3 /*break*/, 3];
+                case 1:
+                    allP = [];
+                    _loop_2 = function (_e) {
+                        var key = _e.key, title = _e.title, paths = _e.paths, connectConfig = __rest(_e, ["key", "title", "paths"]);
+                        allP.push(Manager_1.Manager.getSftp(undefined, (0, IConfig_1.getConnectConfig)(connectConfig)).then(function (_a) {
+                            var conn = _a.conn, sftp = _a.sftp;
+                            return __awaiter(_this, void 0, void 0, function () {
+                                var _i, paths_3, _b, local, remote, ignored;
+                                return __generator(this, function (_c) {
+                                    switch (_c.label) {
+                                        case 0:
+                                            _i = 0, paths_3 = paths;
+                                            _c.label = 1;
+                                        case 1:
+                                            if (!(_i < paths_3.length)) return [3 /*break*/, 4];
+                                            _b = paths_3[_i], local = _b.local, remote = _b.remote, ignored = _b.ignored;
+                                            console.log(chalk_1.default.hex('#fddb3a')("\u540C\u6B65->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " --> ").concat((0, getComPath_1.getComPath)(remote))));
+                                            console.log(chalk_1.default.gray('---->'));
+                                            //同步
+                                            return [4 /*yield*/, (0, syncDF_1.syncDF)((0, getAbsolute_1.getAbsolute)(local), (0, getComPath_1.getComPath)(remote), sftp, ignored)];
+                                        case 2:
+                                            //同步
+                                            _c.sent();
+                                            _c.label = 3;
+                                        case 3:
+                                            _i++;
+                                            return [3 /*break*/, 1];
+                                        case 4: 
+                                        //触发更新回调
+                                        return [4 /*yield*/, Manager_1.Manager.updateF(key)];
+                                        case 5:
+                                            //触发更新回调
+                                            _c.sent();
+                                            //关闭连接
+                                            conn.end();
+                                            return [2 /*return*/];
+                                    }
+                                });
+                            });
+                        }));
+                    };
+                    for (_c = 0, _d = config.syncList; _c < _d.length; _c++) {
+                        _e = _d[_c];
+                        _loop_2(_e);
+                    }
+                    return [4 /*yield*/, Promise.all(allP)];
+                case 2:
+                    _f.sent();
+                    //
+                    console.log(chalk_1.default.hex('#81b214')('\n同步完成'));
+                    _f.label = 3;
+                case 3: return [2 /*return*/];
+            }
         });
     });
 }
+exports.upload = upload;
 //# sourceMappingURL=index.js.map

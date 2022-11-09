@@ -60,7 +60,7 @@ var Manager_1 = require("./Manager");
  * @param remoteDir 远程目录
  * @param op 选项
  */
-function watchDf(key, localDir, remoteDir, op) {
+function watchDf(key, localDir, remoteDir, op, sftp) {
     return __awaiter(this, void 0, void 0, function () {
         var _this = this;
         return __generator(this, function (_a) {
@@ -75,12 +75,12 @@ function watchDf(key, localDir, remoteDir, op) {
                             relativePath = path_1.default.relative(localDir, _path);
                             onRemotePath = path_1.default.join(remoteDir, relativePath);
                             //创建目录
-                            return [4 /*yield*/, mkDir(remoteDir, path_1.default.dirname(relativePath))];
+                            return [4 /*yield*/, mkDir(remoteDir, path_1.default.dirname(relativePath), sftp)];
                         case 1:
                             //创建目录
                             _a.sent();
                             //同步
-                            Manager_1.Manager.fastPut(_path, (0, getComPath_1.getComPath)(onRemotePath)).then(function () {
+                            Manager_1.Manager.fastPut(_path, (0, getComPath_1.getComPath)(onRemotePath), sftp).then(function () {
                                 //触发更新回调
                                 Manager_1.Manager.updateF(key);
                             });
@@ -99,7 +99,7 @@ exports.watchDf = watchDf;
  * @param rootPath 相对目录
  * @param _path
  */
-function mkDir(rootPath, _path) {
+function mkDir(rootPath, _path, sftp) {
     return __awaiter(this, void 0, void 0, function () {
         var _paths, i, len, dir;
         return __generator(this, function (_a) {
@@ -116,7 +116,7 @@ function mkDir(rootPath, _path) {
                         return [3 /*break*/, 3];
                     }
                     //
-                    return [4 /*yield*/, Manager_1.Manager.mkdir((0, getComPath_1.getComPath)(dir))];
+                    return [4 /*yield*/, Manager_1.Manager.mkdir((0, getComPath_1.getComPath)(dir), sftp)];
                 case 2:
                     //
                     _a.sent();

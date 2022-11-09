@@ -1,9 +1,8 @@
+import { IOp as IOp_ } from "yayaluoya-tool/dist/node/getCmdOp";
 /**
  * 命令行选项
  */
-export interface IOp {
-    /** 查看版本 */
-    version: boolean;
+export interface IOp extends IOp_ {
     /** 帮助 */
     help: boolean;
     /** 初始化 */

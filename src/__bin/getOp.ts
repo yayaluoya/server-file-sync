@@ -1,11 +1,9 @@
-import { Command } from 'commander';
+import { IOp as IOp_, getCmdOp } from "yayaluoya-tool/dist/node/getCmdOp";
 
 /** 
  * 命令行选项
  */
-export interface IOp {
-    /** 查看版本 */
-    version: boolean;
+export interface IOp extends IOp_ {
     /** 帮助 */
     help: boolean;
     /** 初始化 */
@@ -23,18 +21,13 @@ export interface IOp {
 /**
  * 获取命令行选项
  */
-export function getOp(): IOp {
-    const program = new Command();
-
-    program.option('-v --version')
-        .option('-h --help')
-        .option('-i --init')
-        .option('-c --config <path>')
-        .option('-dc --debug-config [path]')
-        .option('-k --keys <keys>')
-        .option('-d --demo');
-
-    program.parse(process.argv);
-
-    return program.opts<IOp>();
+export function getOp() {
+    return getCmdOp<IOp>((program) => {
+        program.option('-h --help')
+            .option('-i --init')
+            .option('-c --config <path>')
+            .option('-dc --debug-config [path]')
+            .option('-k --keys <keys>')
+            .option('-d --demo');
+    });
 }

@@ -56,6 +56,7 @@ var chalk_1 = __importDefault(require("chalk"));
 var getComPath_1 = require("./utils/getComPath");
 var moment_1 = __importDefault(require("moment"));
 var fs_1 = __importDefault(require("fs"));
+var IConfig_1 = require("./config/IConfig");
 /**
  * 管理器
  */
@@ -63,21 +64,60 @@ var Manager = /** @class */ (function () {
     function Manager() {
     }
     /**
-     * 连接服务器
+     * 开始
      */
-    Manager.connect = function (config, _false) {
-        var _this = this;
+    Manager.start = function (config, _false) {
         if (_false === void 0) { _false = false; }
+        if (this.start_) {
+            return;
+        }
+        this.start_ = true;
         this._false = _false;
         this.mainConfig = config;
-        //
-        return this.getConn().then(function (conn) {
+        return this;
+    };
+    /**
+     * 获取一个连接实例
+     * @param title
+     * @param connectConfig
+     * @returns
+     */
+    Manager.getConn = function (title, connectConfig) {
+        var _this = this;
+        if (title === void 0) { title = ''; }
+        return new Promise(function (r) {
+            var conn = new ssh2_1.default.Client();
+            //连接
+            var op = __assign(__assign(__assign({}, _this.mainConfig.connectConfig), (0, IConfig_1.getConnectConfig)(_this.mainConfig)), connectConfig);
+            var errF = function (err) {
+                console.log(chalk_1.default.red('服务器连接错误\n'), err);
+                console.log(chalk_1.default.red('错误配置'));
+                console.dir(op, { depth: null });
+            };
+            try {
+                conn.connect(op).on('ready', function () {
+                    title && console.log(chalk_1.default.blue("\n\u670D\u52A1\u5668\u8FDE\u63A5\u6210\u529F".concat(title ? '@' + title : '', "\n")));
+                    r(conn);
+                }).on('error', errF);
+            }
+            catch (err) {
+                errF(err);
+            }
+        });
+    };
+    /**
+     * 获取一个sftp实例
+     * @param title
+     * @param connectConfig
+     */
+    Manager.getSftp = function (title, connectConfig) {
+        if (title === void 0) { title = ''; }
+        return this.getConn(title, connectConfig).then(function (conn) {
             return new Promise(function (r, e) {
                 //建立sftp连接
                 conn.sftp(function (err, sftp) {
-                    _this.sftp = sftp;
                     if (err) {
-                        console.log(chalk_1.default.red('sftp连接失败!'), err);
+                        title && console.log(chalk_1.default.red("sftp\u8FDE\u63A5\u5931\u8D25!".concat(title ? '@' + title : '', "\n")), err);
                         e();
                         return;
                     }
@@ -87,22 +127,6 @@ var Manager = /** @class */ (function () {
                     });
                 });
             });
-        });
-    };
-    /**
-     * 获取一个连接实例
-     * @returns
-     */
-    Manager.getConn = function (alert) {
-        var _this = this;
-        if (alert === void 0) { alert = ''; }
-        return new Promise(function (r) {
-            var conn = new ssh2_1.default.Client();
-            //连接
-            conn.on('ready', function () {
-                console.log(chalk_1.default.blue("\n\u670D\u52A1\u5668\u8FDE\u63A5\u6210\u529F".concat(alert ? '@' + alert : '', "\n")));
-                r(conn);
-            }).connect(__assign({ host: _this.mainConfig.host, port: _this.mainConfig.port, username: _this.mainConfig.username, privateKey: _this.mainConfig.privateKey, passphrase: _this.mainConfig.passphrase }, _this.mainConfig.connectConfig));
         });
     };
     /**
@@ -118,7 +142,6 @@ var Manager = /** @class */ (function () {
                             connF: function () {
                                 return _this.getConn('更新回调');
                             },
-                            sftp: this.sftp,
                         }, key).catch(function (e) {
                             console.log(chalk_1.default.red('执行更新回调出错:'), e);
                         })))];
@@ -132,7 +155,7 @@ var Manager = /** @class */ (function () {
     /**
      * 同步文件
      */
-    Manager.fastPut = function (_path, _remotePath) {
+    Manager.fastPut = function (_path, _remotePath, sftp) {
         var _this = this;
         return new Promise(function (r, e) {
             //假连接就不传
@@ -143,7 +166,7 @@ var Manager = /** @class */ (function () {
                 return;
             }
             //同步
-            _this.sftp.fastPut(_path, _remotePath, function (err) { return __awaiter(_this, void 0, void 0, function () {
+            sftp.fastPut(_path, _remotePath, function (err) { return __awaiter(_this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     if (err) {
                         console.log(chalk_1.default.red('同步失败!', _path, _remotePath), err);
@@ -161,7 +184,7 @@ var Manager = /** @class */ (function () {
      * 创建目录
      * 不管成功失败，都返回的成功解决的promise
      */
-    Manager.mkdir = function (dir) {
+    Manager.mkdir = function (dir, sftp) {
         var _this = this;
         return new Promise(function (r, e) {
             //假连接不做操作
@@ -169,11 +192,12 @@ var Manager = /** @class */ (function () {
                 r();
                 return;
             }
-            _this.sftp.mkdir(dir, function (err) {
+            sftp.mkdir(dir, function (err) {
                 r();
             });
         });
     };
+    Manager.start_ = false;
     return Manager;
 }());
 exports.Manager = Manager;

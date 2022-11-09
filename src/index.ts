@@ -1,28 +1,20 @@
-import { Manager, IConfig } from "./Manager";
+import { Manager } from "./Manager";
 import chalk from "chalk";
 import { syncDF } from "./syncDF";
 import { getAbsolute } from "./utils/getAbsolute";
 import { watchDf } from "./watchDf";
 import { getComPath } from "./utils/getComPath";
 import { ArrayUtils } from "yayaluoya-tool/dist/ArrayUtils";
-import { secondCom } from "./utils/secondCom";
-
-/**
- * 获取配置
- * 主要是为外界提供ts的能力
- * @param c 
- * @returns 
- */
-export function getConfig(c: IConfig): IConfig {
-    return c;
-}
+import { getConnectConfig, TConfig } from "./config/IConfig";
+import { cmdSecondCom } from "yayaluoya-tool/dist/node/cmdSecondCom";
+import { Client, SFTPWrapper } from "ssh2";
 
 /**
  * 开始服务
  */
-export function start(config: IConfig, keys?: string[], demo = false) {
+export function start(config: TConfig, keys?: string[], demo = false) {
     //TODO 防😳
-    config.syncList = ArrayUtils.arraify(config.syncList);
+    config.syncList = ArrayUtils.arraify(config.syncList || []);
     config.syncList.forEach(_ => {
         _.paths = ArrayUtils.arraify(_.paths);
     });
@@ -57,15 +49,15 @@ export function start(config: IConfig, keys?: string[], demo = false) {
                 console.log(chalk.yellow(`同步演示->${title}@${key}: ${getAbsolute(local)} -> ${getComPath(remote)}`));
             }
         }
-        secondCom('上传:y/Y,演示:d/D 输入其它字符取消: ').then((name) => {
+        cmdSecondCom('上传:y/Y,演示:d/D 输入其它字符取消: ').then((name) => {
             switch (true) {
                 /** 上传 */
                 case /^y$/i.test(name):
-                    start_(config);
+                    upload(config);
                     break;
                 /** 演示 */
                 case /^d$/i.test(name):
-                    start_(config, true);
+                    upload(config, true);
             }
         });
         return;
@@ -79,46 +71,56 @@ export function start(config: IConfig, keys?: string[], demo = false) {
         console.log(chalk.red('注意：私钥不要加到项目的版本控制系统中，防止泄露'));
     }
     //
-    start_(config);
+    upload(config);
 }
 
 /**
- * 正式启动
+ * 上传
  * @param config 
  */
-function start_(config: IConfig, _false = false) {
-    //
-    Manager.connect(config, _false).then(async ({
-        conn,
-        sftp,
-    }) => {
-        //查看是否监听
-        if (config.watch) {
-            for (let { key, title, paths } of config.syncList) {
+export async function upload(config: TConfig, _false = false) {
+    Manager.start(config, _false);
+    //查看是否监听
+    if (config.watch) {
+        for (let { key, title, paths, ...connectConfig } of config.syncList) {
+            Manager.getSftp(undefined, getConnectConfig(connectConfig)).then(async ({
+                conn,
+                sftp,
+            }) => {
                 for (let { local, remote, ignored } of paths) {
                     console.log(chalk.hex('#fddb3a')(`监听->${title}@${key}: ${getAbsolute(local)} --> ${getComPath(remote)}`));
                     console.log(chalk.gray('---->'));
-                    await watchDf(key, getAbsolute(local), getComPath(remote), {
+                    watchDf(key, getAbsolute(local), getComPath(remote), {
                         ignored,
-                    });
+                    }, sftp);
                 }
-            }
+            });
         }
-        //直接上传
-        else {
-            for (let { key, title, paths } of config.syncList) {
-                for (let { local, remote, ignored } of paths) {
-                    console.log(chalk.hex('#fddb3a')(`同步->${title}@${key}: ${getAbsolute(local)} --> ${getComPath(remote)}`));
-                    console.log(chalk.gray('---->'));
-                    //同步
-                    await syncDF(getAbsolute(local), getComPath(remote), ignored);
-                }
-                //触发更新回调
-                await Manager.updateF(key);
-            }
-            //关闭连接
-            console.log(chalk.hex('#81b214')('\n同步完成'));
-            conn.end();
+    }
+    //直接上传
+    else {
+        let allP = [];
+        for (let { key, title, paths, ...connectConfig } of config.syncList) {
+            allP.push(
+                Manager.getSftp(undefined, getConnectConfig(connectConfig)).then(async ({
+                    conn,
+                    sftp,
+                }) => {
+                    for (let { local, remote, ignored } of paths) {
+                        console.log(chalk.hex('#fddb3a')(`同步->${title}@${key}: ${getAbsolute(local)} --> ${getComPath(remote)}`));
+                        console.log(chalk.gray('---->'));
+                        //同步
+                        await syncDF(getAbsolute(local), getComPath(remote), sftp, ignored);
+                    }
+                    //触发更新回调
+                    await Manager.updateF(key);
+                    //关闭连接
+                    conn.end();
+                })
+            );
         }
-    });
+        await Promise.all(allP);
+        //
+        console.log(chalk.hex('#81b214')('\n同步完成'));
+    }
 }

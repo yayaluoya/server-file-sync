@@ -35,56 +35,42 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.syncDF = void 0;
-var fs_1 = __importDefault(require("fs"));
-var path_1 = __importDefault(require("path"));
-var Manager_1 = require("./Manager");
-var getComPath_1 = require("./utils/getComPath");
-var anymatch_1 = __importDefault(require("anymatch"));
+exports.upload = exports.getConfig = void 0;
+var ObjectUtils_1 = require("yayaluoya-tool/dist/obj/ObjectUtils");
+var index_1 = require("../index");
+var getConfig_1 = require("../config/getConfig");
 /**
- * 同步目录和文件
- * @param localDir 本地目录
- * @param remoteDir 远程目录
+ * 获取配置
+ * 主要是为外界提供ts的能力
+ * @param c
+ * @returns
  */
-function syncDF(localDir, remoteDir, sftp, ignored) {
+function getConfig(c) {
+    return c;
+}
+exports.getConfig = getConfig;
+/**
+ * 上传
+ * TODO 配置信息中有多少就传多少
+ * @param config
+ */
+function upload(config) {
     return __awaiter(this, void 0, void 0, function () {
-        var stat;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var defaultConfig, _a, _b;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
                 case 0:
-                    //忽略
-                    if (ignored && (0, anymatch_1.default)(ignored, (0, getComPath_1.getComPath)(localDir))) {
-                        return [2 /*return*/];
-                    }
-                    stat = fs_1.default.statSync(localDir);
-                    if (!stat.isFile()) return [3 /*break*/, 2];
-                    return [4 /*yield*/, Manager_1.Manager.fastPut(localDir, (0, getComPath_1.getComPath)(remoteDir), sftp)];
+                    _b = (_a = ObjectUtils_1.ObjectUtils).clone2;
+                    return [4 /*yield*/, getConfig_1.defaultConfig];
                 case 1:
-                    _a.sent();
-                    return [3 /*break*/, 5];
-                case 2:
-                    if (!stat.isDirectory()) return [3 /*break*/, 5];
-                    //创建目录
-                    return [4 /*yield*/, Manager_1.Manager.mkdir((0, getComPath_1.getComPath)(remoteDir), sftp)];
-                case 3:
-                    //创建目录
-                    _a.sent();
+                    defaultConfig = _b.apply(_a, [_c.sent()]);
                     //
-                    return [4 /*yield*/, Promise.all(fs_1.default.readdirSync(localDir).map(function (o) {
-                            return syncDF(path_1.default.join(localDir, o), path_1.default.join(remoteDir, o), sftp, ignored);
-                        }))];
-                case 4:
-                    //
-                    _a.sent();
-                    _a.label = 5;
-                case 5: return [2 /*return*/];
+                    (0, index_1.upload)(ObjectUtils_1.ObjectUtils.merge(defaultConfig, config));
+                    return [2 /*return*/];
             }
         });
     });
 }
-exports.syncDF = syncDF;
-//# sourceMappingURL=syncDF.js.map
+exports.upload = upload;
+//# sourceMappingURL=index.js.map

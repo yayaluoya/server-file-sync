@@ -3,6 +3,7 @@ import path from "path";
 import { getComPath } from "./utils/getComPath";
 import { Manager } from "./Manager";
 import { type Matcher } from 'anymatch';
+import { SFTPWrapper } from "ssh2";
 
 /**
  * 同步目录和文件
@@ -14,7 +15,7 @@ import { type Matcher } from 'anymatch';
 export async function watchDf(key: string, localDir: string, remoteDir: string, op: {
     /** 忽略配置 */
     ignored: Matcher;
-}) {
+}, sftp: SFTPWrapper) {
     chokidar.watch(localDir, {
         ignored: op.ignored || [],
     }).on('all', async (event, _path) => {
@@ -23,9 +24,9 @@ export async function watchDf(key: string, localDir: string, remoteDir: string, 
             //转成通用平台的路径分隔符
             let onRemotePath = path.join(remoteDir, relativePath);
             //创建目录
-            await mkDir(remoteDir, path.dirname(relativePath));
+            await mkDir(remoteDir, path.dirname(relativePath), sftp);
             //同步
-            Manager.fastPut(_path, getComPath(onRemotePath)).then(() => {
+            Manager.fastPut(_path, getComPath(onRemotePath), sftp).then(() => {
                 //触发更新回调
                 Manager.updateF(key);
             })
@@ -38,7 +39,7 @@ export async function watchDf(key: string, localDir: string, remoteDir: string, 
  * @param rootPath 相对目录
  * @param _path 
  */
-async function mkDir(rootPath: string, _path: string) {
+async function mkDir(rootPath: string, _path: string, sftp: SFTPWrapper) {
     let _paths = getComPath(_path).split('/');
     for (let i = 0, len = _paths.length; i < len; i++) {
         let dir = path.join(rootPath, ..._paths.slice(0, i + 1));
@@ -47,6 +48,6 @@ async function mkDir(rootPath: string, _path: string) {
             continue;
         }
         //
-        await Manager.mkdir(getComPath(dir));
+        await Manager.mkdir(getComPath(dir), sftp);
     }
 }

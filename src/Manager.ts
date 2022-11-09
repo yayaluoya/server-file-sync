@@ -1,82 +1,81 @@
-import { Client, ConnectConfig, SFTPWrapper } from "ssh2";
-import { type Matcher } from 'anymatch';
+import { Client, SFTPWrapper } from "ssh2";
 import ssh2 from "ssh2";
 import chalk from "chalk";
 import { getComPath } from "./utils/getComPath";
 import moment from "moment";
 import fs from "fs";
-
-/**
- * 配置文件类型
- */
-export interface IConfig {
-    /** 配置名字 */
-    name: string;
-    /** 主机地址 */
-    host?: string,
-    /** 端口号 */
-    port?: number,
-    /** 用户名 */
-    username?: string,
-    /** 私钥密码 */
-    passphrase?: string;
-    /** 私钥字符串 */
-    privateKey?: string;
-    /** 同步列表 */
-    syncList: {
-        /** key */
-        key: string;
-        /** 标题 */
-        title: string;
-        /** 路径列表 */
-        paths: {
-            /** 本地地址 */
-            local: string;
-            /** 远程地址 */
-            remote: string;
-            /** 文件忽略，请注意不支持 Windows 样式的反斜杠作为分隔符*/
-            ignored?: Matcher;
-        }[],
-    }[];
-    /** ssh2的连接配置 */
-    connectConfig?: ConnectConfig,
-    /** 是否监听 */
-    watch: boolean;
-    /** 更新回调 */
-    updateF?: (op: {
-        connF: () => Promise<Client>;
-        sftp: SFTPWrapper;
-    }, key: string) => Promise<any>;
-}
+import { getConnectConfig, TConfig, TConnectConfig } from "./config/IConfig";
 
 /**
  * 管理器
  */
 export class Manager {
+    static start_ = false;
     /** 主配置文件 */
-    static mainConfig: IConfig;
-    /** sftp句柄 */
-    static sftp: SFTPWrapper;
+    static mainConfig: TConfig;
     /** 是否是假连接，如果是的话就不会真传文件 */
     private static _false: boolean;
 
     /** 
-     * 连接服务器
+     * 开始
      */
-    static connect(config: IConfig, _false = false) {
+    static start(config: TConfig, _false = false): typeof Manager {
+        if (this.start_) { return; }
+        this.start_ = true;
         this._false = _false;
         this.mainConfig = config;
-        //
-        return this.getConn().then((conn) => {
+        return this;
+    }
+
+    /**
+     * 获取一个连接实例
+     * @param title 
+     * @param connectConfig 
+     * @returns 
+     */
+    static getConn(title = '', connectConfig?: TConnectConfig) {
+        return new Promise<Client>((r) => {
+            const conn = new ssh2.Client();
+            //连接
+            let op = {
+                ...this.mainConfig.connectConfig,
+                ...getConnectConfig(this.mainConfig),
+                ...connectConfig,
+            };
+            let errF = (err) => {
+                console.log(chalk.red('服务器连接错误\n'), err);
+                console.log(chalk.red('错误配置'));
+                console.dir(
+                    op,
+                    { depth: null }
+                );
+            }
+            try {
+                conn.connect(op).on('ready', () => {
+                    title && console.log(chalk.blue(`\n服务器连接成功${title ? '@' + title : ''}\n`));
+                    r(conn);
+                }).on('error', errF);
+            } catch (err) {
+                errF(err);
+            }
+        })
+    }
+
+    /**
+     * 获取一个sftp实例
+     * @param title 
+     * @param connectConfig 
+     */
+    static getSftp(title = '', connectConfig?: TConnectConfig) {
+        return this.getConn(title, connectConfig).then(conn => {
             return new Promise<{
                 conn: Client;
                 sftp: SFTPWrapper;
             }>((r, e) => {
                 //建立sftp连接
                 conn.sftp((err, sftp) => {
-                    this.sftp = sftp;
                     if (err) {
-                        console.log(chalk.red('sftp连接失败!'), err);
+                        title && console.log(chalk.red(`sftp连接失败!${title ? '@' + title : ''}\n`), err);
                         e();
                         return;
                     }
@@ -86,28 +85,6 @@ export class Manager {
                     });
                 });
             })
-        });
-    }
-
-    /**
-     * 获取一个连接实例
-     * @returns 
-     */
-    static getConn(alert = '') {
-        return new Promise<Client>((r) => {
-            const conn = new ssh2.Client();
-            //连接
-            conn.on('ready', () => {
-                console.log(chalk.blue(`\n服务器连接成功${alert ? '@' + alert : ''}\n`));
-                r(conn);
-            }).connect({
-                host: this.mainConfig.host,
-                port: this.mainConfig.port,
-                username: this.mainConfig.username,
-                privateKey: this.mainConfig.privateKey,
-                passphrase: this.mainConfig.passphrase,
-                ...this.mainConfig.connectConfig,
-            });
         })
     }
 
@@ -119,7 +96,6 @@ export class Manager {
             connF: () => {
                 return this.getConn('更新回调');
             },
-            sftp: this.sftp,
         }, key).catch((e) => {
             console.log(chalk.red('执行更新回调出错:'), e);
         }));
@@ -128,7 +104,7 @@ export class Manager {
     /**
      * 同步文件
      */
-    static fastPut(_path: string, _remotePath: string) {
+    static fastPut(_path: string, _remotePath: string, sftp: SFTPWrapper) {
         return new Promise<void>((r, e) => {
             //假连接就不传
             if (this._false) {
@@ -138,7 +114,7 @@ export class Manager {
                 return;
             }
             //同步
-            this.sftp.fastPut(_path, _remotePath, async (err) => {
+            sftp.fastPut(_path, _remotePath, async (err) => {
                 if (err) {
                     console.log(chalk.red('同步失败!', _path, _remotePath), err);
                     e(err);
@@ -154,14 +130,14 @@ export class Manager {
      * 创建目录
      * 不管成功失败，都返回的成功解决的promise
      */
-    static mkdir(dir: string) {
+    static mkdir(dir: string, sftp: SFTPWrapper) {
         return new Promise<void>((r, e) => {
             //假连接不做操作
             if (this._false) {
                 r();
                 return;
             }
-            this.sftp.mkdir(dir, (err) => {
+            sftp.mkdir(dir, (err) => {
                 r();
             });
         })
