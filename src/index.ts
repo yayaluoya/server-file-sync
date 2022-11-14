@@ -83,6 +83,8 @@ export async function upload(config: TConfig, _false = false) {
     //查看是否监听
     if (config.watch) {
         for (let { key, title, paths, ...connectConfig } of config.syncList) {
+            //触发上传之前的回调
+            await Manager.beforeF(key);
             Manager.getSftp(undefined, getConnectConfig(connectConfig)).then(async ({
                 conn,
                 sftp,
@@ -101,6 +103,8 @@ export async function upload(config: TConfig, _false = false) {
     else {
         let allP = [];
         for (let { key, title, paths, ...connectConfig } of config.syncList) {
+            //触发上传之前的回调
+            await Manager.beforeF(key);
             allP.push(
                 Manager.getSftp(undefined, getConnectConfig(connectConfig)).then(async ({
                     conn,

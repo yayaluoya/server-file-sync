@@ -5,7 +5,7 @@ import { TConfig } from "../config/IConfig";
  * @param c
  * @returns
  */
-export declare function getConfig(c: TConfig): TConfig | Promise<TConfig>;
+export declare function getConfig(f: () => TConfig | Promise<TConfig>): TConfig | Promise<TConfig>;
 /**
  * 开始同步
  * TODO 配置信息中有多少就传多少

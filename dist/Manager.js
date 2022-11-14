@@ -130,6 +130,29 @@ var Manager = /** @class */ (function () {
         });
     };
     /**
+     * 同步之前的回调
+     */
+    Manager.beforeF = function (key) {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0: return [4 /*yield*/, (this._false ||
+                            Promise.resolve((_b = (_a = this.mainConfig).beforeF) === null || _b === void 0 ? void 0 : _b.call(_a, function (op) {
+                                return _this.getConn('beforeF', op);
+                            }, key))
+                                .catch(function (e) {
+                                console.log(chalk_1.default.red('执行beforeF出错:'), e);
+                            }))];
+                    case 1:
+                        _c.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    /**
      * 更新回调
      */
     Manager.updateF = function (key) {
@@ -138,13 +161,13 @@ var Manager = /** @class */ (function () {
             var _this = this;
             return __generator(this, function (_c) {
                 switch (_c.label) {
-                    case 0: return [4 /*yield*/, (this._false || ((_b = (_a = this.mainConfig).updateF) === null || _b === void 0 ? void 0 : _b.call(_a, {
-                            connF: function () {
-                                return _this.getConn('updateF');
-                            },
-                        }, key).catch(function (e) {
-                            console.log(chalk_1.default.red('执行更新回调出错:'), e);
-                        })))];
+                    case 0: return [4 /*yield*/, (this._false ||
+                            Promise.resolve((_b = (_a = this.mainConfig).updateF) === null || _b === void 0 ? void 0 : _b.call(_a, function (op) {
+                                return _this.getConn('updateF', op);
+                            }, key))
+                                .catch(function (e) {
+                                console.log(chalk_1.default.red('执行updateF出错:'), e);
+                            }))];
                     case 1:
                         _c.sent();
                         return [2 /*return*/];

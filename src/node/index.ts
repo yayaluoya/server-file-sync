@@ -9,8 +9,8 @@ import { defaultConfig as defaultConfig_ } from "../config/getConfig";
  * @param c 
  * @returns 
  */
-export function getConfig(c: TConfig): TConfig | Promise<TConfig> {
-    return c;
+export function getConfig(f: () => TConfig | Promise<TConfig>) {
+    return f();
 }
 
 /**

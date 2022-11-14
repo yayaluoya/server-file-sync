@@ -30,6 +30,10 @@ export declare class Manager {
         sftp: SFTPWrapper;
     }>;
     /**
+     * 同步之前的回调
+     */
+    static beforeF(key: string): Promise<void>;
+    /**
      * 更新回调
      */
     static updateF(key: string): Promise<void>;

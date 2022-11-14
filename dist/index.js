@@ -139,84 +139,124 @@ function upload(config, _false) {
             switch (_f.label) {
                 case 0:
                     Manager_1.Manager.start(config, _false);
-                    if (!config.watch) return [3 /*break*/, 1];
+                    if (!config.watch) return [3 /*break*/, 5];
                     _loop_1 = function (_b) {
-                        var key = _b.key, title = _b.title, paths = _b.paths, connectConfig = __rest(_b, ["key", "title", "paths"]);
-                        Manager_1.Manager.getSftp(undefined, (0, IConfig_1.getConnectConfig)(connectConfig)).then(function (_a) {
-                            var conn = _a.conn, sftp = _a.sftp;
-                            return __awaiter(_this, void 0, void 0, function () {
-                                var _i, paths_2, _b, local, remote, ignored;
-                                return __generator(this, function (_c) {
-                                    for (_i = 0, paths_2 = paths; _i < paths_2.length; _i++) {
-                                        _b = paths_2[_i], local = _b.local, remote = _b.remote, ignored = _b.ignored;
-                                        console.log(chalk_1.default.hex('#fddb3a')("\u76D1\u542C->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " --> ").concat((0, getComPath_1.getComPath)(remote))));
-                                        console.log(chalk_1.default.gray('---->'));
-                                        (0, watchDf_1.watchDf)(key, (0, getAbsolute_1.getAbsolute)(local), (0, getComPath_1.getComPath)(remote), {
-                                            ignored: ignored,
-                                        }, sftp);
-                                    }
+                        var key, title, paths, connectConfig;
+                        return __generator(this, function (_g) {
+                            switch (_g.label) {
+                                case 0:
+                                    key = _b.key, title = _b.title, paths = _b.paths, connectConfig = __rest(_b, ["key", "title", "paths"]);
+                                    //触发上传之前的回调
+                                    return [4 /*yield*/, Manager_1.Manager.beforeF(key)];
+                                case 1:
+                                    //触发上传之前的回调
+                                    _g.sent();
+                                    Manager_1.Manager.getSftp(undefined, (0, IConfig_1.getConnectConfig)(connectConfig)).then(function (_a) {
+                                        var conn = _a.conn, sftp = _a.sftp;
+                                        return __awaiter(_this, void 0, void 0, function () {
+                                            var _i, paths_2, _b, local, remote, ignored;
+                                            return __generator(this, function (_c) {
+                                                for (_i = 0, paths_2 = paths; _i < paths_2.length; _i++) {
+                                                    _b = paths_2[_i], local = _b.local, remote = _b.remote, ignored = _b.ignored;
+                                                    console.log(chalk_1.default.hex('#fddb3a')("\u76D1\u542C->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " --> ").concat((0, getComPath_1.getComPath)(remote))));
+                                                    console.log(chalk_1.default.gray('---->'));
+                                                    (0, watchDf_1.watchDf)(key, (0, getAbsolute_1.getAbsolute)(local), (0, getComPath_1.getComPath)(remote), {
+                                                        ignored: ignored,
+                                                    }, sftp);
+                                                }
+                                                return [2 /*return*/];
+                                            });
+                                        });
+                                    });
                                     return [2 /*return*/];
-                                });
-                            });
+                            }
                         });
                     };
-                    for (_i = 0, _a = config.syncList; _i < _a.length; _i++) {
-                        _b = _a[_i];
-                        _loop_1(_b);
-                    }
-                    return [3 /*break*/, 3];
+                    _i = 0, _a = config.syncList;
+                    _f.label = 1;
                 case 1:
+                    if (!(_i < _a.length)) return [3 /*break*/, 4];
+                    _b = _a[_i];
+                    return [5 /*yield**/, _loop_1(_b)];
+                case 2:
+                    _f.sent();
+                    _f.label = 3;
+                case 3:
+                    _i++;
+                    return [3 /*break*/, 1];
+                case 4: return [3 /*break*/, 11];
+                case 5:
                     allP = [];
                     _loop_2 = function (_e) {
-                        var key = _e.key, title = _e.title, paths = _e.paths, connectConfig = __rest(_e, ["key", "title", "paths"]);
-                        allP.push(Manager_1.Manager.getSftp(undefined, (0, IConfig_1.getConnectConfig)(connectConfig)).then(function (_a) {
-                            var conn = _a.conn, sftp = _a.sftp;
-                            return __awaiter(_this, void 0, void 0, function () {
-                                var _i, paths_3, _b, local, remote, ignored;
-                                return __generator(this, function (_c) {
-                                    switch (_c.label) {
-                                        case 0:
-                                            _i = 0, paths_3 = paths;
-                                            _c.label = 1;
-                                        case 1:
-                                            if (!(_i < paths_3.length)) return [3 /*break*/, 4];
-                                            _b = paths_3[_i], local = _b.local, remote = _b.remote, ignored = _b.ignored;
-                                            console.log(chalk_1.default.hex('#fddb3a')("\u540C\u6B65->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " --> ").concat((0, getComPath_1.getComPath)(remote))));
-                                            console.log(chalk_1.default.gray('---->'));
-                                            //同步
-                                            return [4 /*yield*/, (0, syncDF_1.syncDF)((0, getAbsolute_1.getAbsolute)(local), (0, getComPath_1.getComPath)(remote), sftp, ignored)];
-                                        case 2:
-                                            //同步
-                                            _c.sent();
-                                            _c.label = 3;
-                                        case 3:
-                                            _i++;
-                                            return [3 /*break*/, 1];
-                                        case 4: 
-                                        //触发更新回调
-                                        return [4 /*yield*/, Manager_1.Manager.updateF(key)];
-                                        case 5:
-                                            //触发更新回调
-                                            _c.sent();
-                                            //关闭连接
-                                            conn.end();
-                                            return [2 /*return*/];
-                                    }
-                                });
-                            });
-                        }));
+                        var key, title, paths, connectConfig;
+                        return __generator(this, function (_h) {
+                            switch (_h.label) {
+                                case 0:
+                                    key = _e.key, title = _e.title, paths = _e.paths, connectConfig = __rest(_e, ["key", "title", "paths"]);
+                                    //触发上传之前的回调
+                                    return [4 /*yield*/, Manager_1.Manager.beforeF(key)];
+                                case 1:
+                                    //触发上传之前的回调
+                                    _h.sent();
+                                    allP.push(Manager_1.Manager.getSftp(undefined, (0, IConfig_1.getConnectConfig)(connectConfig)).then(function (_a) {
+                                        var conn = _a.conn, sftp = _a.sftp;
+                                        return __awaiter(_this, void 0, void 0, function () {
+                                            var _i, paths_3, _b, local, remote, ignored;
+                                            return __generator(this, function (_c) {
+                                                switch (_c.label) {
+                                                    case 0:
+                                                        _i = 0, paths_3 = paths;
+                                                        _c.label = 1;
+                                                    case 1:
+                                                        if (!(_i < paths_3.length)) return [3 /*break*/, 4];
+                                                        _b = paths_3[_i], local = _b.local, remote = _b.remote, ignored = _b.ignored;
+                                                        console.log(chalk_1.default.hex('#fddb3a')("\u540C\u6B65->".concat(title, "@").concat(key, ": ").concat((0, getAbsolute_1.getAbsolute)(local), " --> ").concat((0, getComPath_1.getComPath)(remote))));
+                                                        console.log(chalk_1.default.gray('---->'));
+                                                        //同步
+                                                        return [4 /*yield*/, (0, syncDF_1.syncDF)((0, getAbsolute_1.getAbsolute)(local), (0, getComPath_1.getComPath)(remote), sftp, ignored)];
+                                                    case 2:
+                                                        //同步
+                                                        _c.sent();
+                                                        _c.label = 3;
+                                                    case 3:
+                                                        _i++;
+                                                        return [3 /*break*/, 1];
+                                                    case 4: 
+                                                    //触发更新回调
+                                                    return [4 /*yield*/, Manager_1.Manager.updateF(key)];
+                                                    case 5:
+                                                        //触发更新回调
+                                                        _c.sent();
+                                                        //关闭连接
+                                                        conn.end();
+                                                        return [2 /*return*/];
+                                                }
+                                            });
+                                        });
+                                    }));
+                                    return [2 /*return*/];
+                            }
+                        });
                     };
-                    for (_c = 0, _d = config.syncList; _c < _d.length; _c++) {
-                        _e = _d[_c];
-                        _loop_2(_e);
-                    }
-                    return [4 /*yield*/, Promise.all(allP)];
-                case 2:
+                    _c = 0, _d = config.syncList;
+                    _f.label = 6;
+                case 6:
+                    if (!(_c < _d.length)) return [3 /*break*/, 9];
+                    _e = _d[_c];
+                    return [5 /*yield**/, _loop_2(_e)];
+                case 7:
+                    _f.sent();
+                    _f.label = 8;
+                case 8:
+                    _c++;
+                    return [3 /*break*/, 6];
+                case 9: return [4 /*yield*/, Promise.all(allP)];
+                case 10:
                     _f.sent();
                     //
                     console.log(chalk_1.default.hex('#81b214')('\n同步完成'));
-                    _f.label = 3;
-                case 3: return [2 /*return*/];
+                    _f.label = 11;
+                case 11: return [2 /*return*/];
             }
         });
     });

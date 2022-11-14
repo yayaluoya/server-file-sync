@@ -89,16 +89,32 @@ export class Manager {
     }
 
     /** 
+     * 同步之前的回调
+     */
+    static async beforeF(key: string) {
+        await (
+            this._false ||
+            Promise.resolve(this.mainConfig.beforeF?.((op) => {
+                return this.getConn('beforeF', op);
+            }, key))
+                .catch((e) => {
+                    console.log(chalk.red('执行beforeF出错:'), e);
+                })
+        );
+    }
+    /** 
      * 更新回调
      */
     static async updateF(key: string) {
-        await (this._false || this.mainConfig.updateF?.({
-            connF: () => {
-                return this.getConn('updateF');
-            },
-        }, key).catch((e) => {
-            console.log(chalk.red('执行更新回调出错:'), e);
-        }));
+        await (
+            this._false ||
+            Promise.resolve(this.mainConfig.updateF?.((op) => {
+                return this.getConn('updateF', op);
+            }, key))
+                .catch((e) => {
+                    console.log(chalk.red('执行updateF出错:'), e);
+                })
+        );
     }
 
     /**

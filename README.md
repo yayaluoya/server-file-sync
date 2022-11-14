@@ -25,26 +25,19 @@ sfs -h 查看所有命令和使用方式
 /**
  * 配置文件类型
  */
-import { type Matcher } from 'anymatch';
-import { Client, SFTPWrapper, ConnectConfig } from "ssh2";
+import { Matcher } from "anymatch";
+import { Client, ConnectConfig } from "ssh2";
+
+/** 基础连接配置 */
+export type TConnectConfig = Pick<ConnectConfig, 'host' | 'port' | 'username' | 'passphrase' | 'privateKey'>
+
 /**
  * 配置文件类型
+ * TODO 关于ssh2配置信息的合并顺序是先connectConfig中的字段，再是配置文件中的字段，，再是syncList中的字段
  */
-interface IConfig {
-    /** 配置名字 */
-    name: string;
-    /** 主机地址 */
-    host?: string,
-    /** 端口号 */
-    port?: number,
-    /** 用户名 */
-    username?: string,
-    /** 私钥密码 */
-    passphrase?: string;
-    /** 私钥字符串 */
-    privateKey?: string;
+export type TConfig = TConnectConfig & {
     /** 同步列表 */
-    syncList: {
+    syncList?: ({
         /** key */
         key: string;
         /** 标题 */
@@ -58,15 +51,36 @@ interface IConfig {
             /** 文件忽略，请注意不支持 Windows 样式的反斜杠作为分隔符*/
             ignored?: Matcher;
         }[],
-    }[];
+    } & TConnectConfig)[];
     /** ssh2的连接配置 */
     connectConfig?: ConnectConfig,
     /** 是否监听 */
-    watch: boolean;
+    watch?: boolean;
+    /** 开始同步之前的回调 */
+    beforeF?: (connF: (op?: TConnectConfig) => Promise<Client>, key: string) => Promise<void>;
     /** 更新回调 */
-    updateF?: (op: {
-        connF: () => Promise<Client>;
-        sftp: SFTPWrapper;
-    }, key: string) => Promise<any>;
+    updateF?: (connF: (op?: TConnectConfig) => Promise<Client>, key: string) => Promise<void>;
 }
+```
+
+建议使用方法getConfig获取config，这样就有全类型提示了，该方法的声明如下
+
+```ts
+function getConfig(f: () => TConfig | Promise<TConfig>);
+```
+
+使用方法如下
+
+```ts
+const { getConfig } = require("server-file-sync");
+
+/**
+ * server-file-sync 的默认配置文件
+ */
+module.exports = getConfig(() => {
+    // 可以是异步的
+    return {
+        ...
+    };
+});
 ```

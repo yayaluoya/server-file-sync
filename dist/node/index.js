@@ -46,8 +46,8 @@ var getConfig_1 = require("../config/getConfig");
  * @param c
  * @returns
  */
-function getConfig(c) {
-    return c;
+function getConfig(f) {
+    return f();
 }
 exports.getConfig = getConfig;
 /**

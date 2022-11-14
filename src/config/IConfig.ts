@@ -29,10 +29,10 @@ export type TConfig = TConnectConfig & {
     connectConfig?: ConnectConfig,
     /** 是否监听 */
     watch?: boolean;
+    /** 开始同步之前的回调 */
+    beforeF?: (connF: (op?: TConnectConfig) => Promise<Client>, key: string) => Promise<void>;
     /** 更新回调 */
-    updateF?: (op: {
-        connF: () => Promise<Client>;
-    }, key: string) => Promise<any>;
+    updateF?: (connF: (op?: TConnectConfig) => Promise<Client>, key: string) => Promise<void>;
 }
 
 /**
