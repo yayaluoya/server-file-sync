@@ -139,17 +139,20 @@ function upload(config, _false) {
             switch (_f.label) {
                 case 0:
                     Manager_1.Manager.start(config, _false);
-                    if (!config.watch) return [3 /*break*/, 5];
+                    //
+                    return [4 /*yield*/, Manager_1.Manager.beforeF()];
+                case 1:
+                    //
+                    _f.sent();
+                    if (!config.watch) return [3 /*break*/, 6];
                     _loop_1 = function (_b) {
                         var key, title, paths, connectConfig;
                         return __generator(this, function (_g) {
                             switch (_g.label) {
                                 case 0:
                                     key = _b.key, title = _b.title, paths = _b.paths, connectConfig = __rest(_b, ["key", "title", "paths"]);
-                                    //触发上传之前的回调
-                                    return [4 /*yield*/, Manager_1.Manager.beforeF(key)];
+                                    return [4 /*yield*/, Manager_1.Manager.execItemF(key, 'beforeF')];
                                 case 1:
-                                    //触发上传之前的回调
                                     _g.sent();
                                     Manager_1.Manager.getSftp(undefined, (0, IConfig_1.getConnectConfig)(connectConfig)).then(function (_a) {
                                         var conn = _a.conn, sftp = _a.sftp;
@@ -173,19 +176,19 @@ function upload(config, _false) {
                         });
                     };
                     _i = 0, _a = config.syncList;
-                    _f.label = 1;
-                case 1:
-                    if (!(_i < _a.length)) return [3 /*break*/, 4];
+                    _f.label = 2;
+                case 2:
+                    if (!(_i < _a.length)) return [3 /*break*/, 5];
                     _b = _a[_i];
                     return [5 /*yield**/, _loop_1(_b)];
-                case 2:
-                    _f.sent();
-                    _f.label = 3;
                 case 3:
+                    _f.sent();
+                    _f.label = 4;
+                case 4:
                     _i++;
-                    return [3 /*break*/, 1];
-                case 4: return [3 /*break*/, 11];
-                case 5:
+                    return [3 /*break*/, 2];
+                case 5: return [3 /*break*/, 13];
+                case 6:
                     allP = [];
                     _loop_2 = function (_e) {
                         var key, title, paths, connectConfig;
@@ -193,10 +196,8 @@ function upload(config, _false) {
                             switch (_h.label) {
                                 case 0:
                                     key = _e.key, title = _e.title, paths = _e.paths, connectConfig = __rest(_e, ["key", "title", "paths"]);
-                                    //触发上传之前的回调
-                                    return [4 /*yield*/, Manager_1.Manager.beforeF(key)];
+                                    return [4 /*yield*/, Manager_1.Manager.execItemF(key, 'beforeF')];
                                 case 1:
-                                    //触发上传之前的回调
                                     _h.sent();
                                     allP.push(Manager_1.Manager.getSftp(undefined, (0, IConfig_1.getConnectConfig)(connectConfig)).then(function (_a) {
                                         var conn = _a.conn, sftp = _a.sftp;
@@ -221,14 +222,14 @@ function upload(config, _false) {
                                                     case 3:
                                                         _i++;
                                                         return [3 /*break*/, 1];
-                                                    case 4: 
-                                                    //触发更新回调
-                                                    return [4 /*yield*/, Manager_1.Manager.updateF(key)];
-                                                    case 5:
-                                                        //触发更新回调
-                                                        _c.sent();
+                                                    case 4:
                                                         //关闭连接
                                                         conn.end();
+                                                        //
+                                                        return [4 /*yield*/, Manager_1.Manager.execItemF(key, 'laterF')];
+                                                    case 5:
+                                                        //
+                                                        _c.sent();
                                                         return [2 /*return*/];
                                                 }
                                             });
@@ -239,24 +240,29 @@ function upload(config, _false) {
                         });
                     };
                     _c = 0, _d = config.syncList;
-                    _f.label = 6;
-                case 6:
-                    if (!(_c < _d.length)) return [3 /*break*/, 9];
+                    _f.label = 7;
+                case 7:
+                    if (!(_c < _d.length)) return [3 /*break*/, 10];
                     _e = _d[_c];
                     return [5 /*yield**/, _loop_2(_e)];
-                case 7:
-                    _f.sent();
-                    _f.label = 8;
                 case 8:
+                    _f.sent();
+                    _f.label = 9;
+                case 9:
                     _c++;
-                    return [3 /*break*/, 6];
-                case 9: return [4 /*yield*/, Promise.all(allP)];
-                case 10:
+                    return [3 /*break*/, 7];
+                case 10: return [4 /*yield*/, Promise.all(allP)];
+                case 11:
+                    _f.sent();
+                    //
+                    return [4 /*yield*/, Manager_1.Manager.laterF()];
+                case 12:
+                    //
                     _f.sent();
                     //
                     console.log(chalk_1.default.hex('#81b214')('\n同步完成'));
-                    _f.label = 11;
-                case 11: return [2 /*return*/];
+                    _f.label = 13;
+                case 13: return [2 /*return*/];
             }
         });
     });

@@ -14,6 +14,27 @@ export declare class Manager {
      */
     static start(config: TConfig, _false?: boolean): typeof Manager;
     /**
+     * 通过key获取配置
+     * @param key
+     */
+    static byKeyGetConfig(key: string): {
+        key: string;
+        title: string;
+        paths: {
+            local: string;
+            remote: string;
+            ignored?: import("anymatch").Matcher;
+        }[];
+        beforeF?: (connF: (this: any & TConnectConfig) => Promise<Client>) => Promise<void>;
+        laterF?: (connF: (this: any & TConnectConfig) => Promise<Client>) => Promise<void>;
+    } & TConnectConfig;
+    /**
+     * 执行某一个同步项的某一个回调
+     * @param key
+     * @param fKey
+     */
+    static execItemF(key: string, fKey: Extract<keyof getArrayT<TConfig['syncList']>, "beforeF" | 'laterF'>): Promise<any>;
+    /**
      * 获取一个连接实例
      * @param title
      * @param connectConfig
@@ -32,11 +53,11 @@ export declare class Manager {
     /**
      * 同步之前的回调
      */
-    static beforeF(key: string): Promise<void>;
+    static beforeF(): Promise<void>;
     /**
-     * 更新回调
+     * 完成的回调
      */
-    static updateF(key: string): Promise<void>;
+    static laterF(): Promise<void>;
     /**
      * 同步文件
      */

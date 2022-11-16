@@ -1,12 +1,25 @@
 const { readFileSync } = require("fs");
 const path = require("path");
 const { join } = require("path");
-const { getConfig } = require("server-file-sync");
+
+let getConfig;
+try {
+    getConfig = require("server-file-sync").getConfig;
+} catch {
+    getConfig = (_) => _();
+}
 
 /**
  * server-file-sync 的默认配置文件
  */
-module.exports = getConfig(() => {
+module.exports = getConfig(async () => {
+    //等一会儿
+    console.log('异步加载配置...');
+    await new Promise((r, e) => {
+        setTimeout(() => {
+            r();
+        }, 3000);
+    });
     return {
         /** 主机地址 */
         host: '47.94.233.236',
@@ -45,15 +58,31 @@ module.exports = getConfig(() => {
                         remote: '/www/test/sfs-test2/hh.html',
                     },
                 ],
+                beforeF() {
+                    console.log(this.key, '同步开始');
+                    return new Promise((r, e) => {
+                        setTimeout(() => {
+                            r();
+                        }, 3000);
+                    });
+                },
+                laterF() {
+                    console.log(this.key, '同步完成');
+                },
             },
         ],
         /** 是否监听 */
         watch: false,
-        beforeF(connF, key) {
-            console.log('上传之前的回调', key);
+        beforeF(connF) {
+            console.log('主回调-同步之前');
+            return new Promise((r, e) => {
+                setTimeout(() => {
+                    r();
+                }, 3000);
+            });
         },
-        updateF(connF, key) {
-            console.log('更新完成', key);
+        laterF(connF) {
+            console.log('主回调-同步完成');
             return connF().then((conn) => {
                 return new Promise((r, e) => {
                     conn.exec('uptime', (err, stream) => {

@@ -48,7 +48,7 @@ import { cmdSecondCom } from "yayaluoya-tool/dist/node/cmdSecondCom";
                 })
             }
             p.then(() => {
-                fs.createReadStream(path.join(__dirname, '../../config.js')).pipe(fs.createWriteStream(projectConfigUrl));
+                fs.createReadStream(path.join(__dirname, '../../config_tem.js')).pipe(fs.createWriteStream(projectConfigUrl));
                 console.log(chalk.green(`配置文件创建成功 ${projectConfigUrl}`));
             }).catch(() => {
                 console.log('已取消');

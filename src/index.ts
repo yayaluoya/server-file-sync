@@ -80,11 +80,12 @@ export function start(config: TConfig, keys?: string[], demo = false) {
  */
 export async function upload(config: TConfig, _false = false) {
     Manager.start(config, _false);
+    //
+    await Manager.beforeF();
     //查看是否监听
     if (config.watch) {
         for (let { key, title, paths, ...connectConfig } of config.syncList) {
-            //触发上传之前的回调
-            await Manager.beforeF(key);
+            await Manager.execItemF(key, 'beforeF');
             Manager.getSftp(undefined, getConnectConfig(connectConfig)).then(async ({
                 conn,
                 sftp,
@@ -103,8 +104,7 @@ export async function upload(config: TConfig, _false = false) {
     else {
         let allP = [];
         for (let { key, title, paths, ...connectConfig } of config.syncList) {
-            //触发上传之前的回调
-            await Manager.beforeF(key);
+            await Manager.execItemF(key, 'beforeF');
             allP.push(
                 Manager.getSftp(undefined, getConnectConfig(connectConfig)).then(async ({
                     conn,
@@ -116,14 +116,16 @@ export async function upload(config: TConfig, _false = false) {
                         //同步
                         await syncDF(getAbsolute(local), getComPath(remote), sftp, ignored);
                     }
-                    //触发更新回调
-                    await Manager.updateF(key);
                     //关闭连接
                     conn.end();
+                    //
+                    await Manager.execItemF(key, 'laterF');
                 })
             );
         }
         await Promise.all(allP);
+        //
+        await Manager.laterF();
         //
         console.log(chalk.hex('#81b214')('\n同步完成'));
     }

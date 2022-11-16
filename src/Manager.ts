@@ -28,6 +28,30 @@ export class Manager {
     }
 
     /**
+     * 通过key获取配置
+     * @param key 
+     */
+    static byKeyGetConfig(key: string) {
+        return this.mainConfig.syncList.find(_ => {
+            return _.key == key;
+        });
+    }
+
+    /**
+     * 执行某一个同步项的某一个回调
+     * @param key 
+     * @param fKey 
+     */
+    static execItemF(key: string, fKey: Extract<keyof getArrayT<TConfig['syncList']>, "beforeF" | 'laterF'>) {
+        let onItem = this.byKeyGetConfig(key);
+        if (onItem) {
+            return Promise.resolve((onItem[fKey] as (connF: () => Promise<Client>) => Promise<void>)?.call(onItem, () => {
+                return this.getConn(fKey, getConnectConfig(onItem));
+            }));
+        }
+    }
+
+    /**
      * 获取一个连接实例
      * @param title 
      * @param connectConfig 
@@ -52,7 +76,7 @@ export class Manager {
             }
             try {
                 conn.connect(op).on('ready', () => {
-                    title && console.log(chalk.blue(`\n服务器连接成功${title ? ':' + title : ''}\n`));
+                    title && console.log(chalk.blue(`\n服务器连接${title ? ':' + title : ''}\n`));
                     r(conn);
                 }).on('error', errF);
             } catch (err) {
@@ -91,28 +115,28 @@ export class Manager {
     /** 
      * 同步之前的回调
      */
-    static async beforeF(key: string) {
+    static async beforeF() {
         await (
             this._false ||
             Promise.resolve(this.mainConfig.beforeF?.((op) => {
                 return this.getConn('beforeF', op);
-            }, key))
+            }))
                 .catch((e) => {
                     console.log(chalk.red('执行beforeF出错:'), e);
                 })
         );
     }
     /** 
-     * 更新回调
+     * 完成的回调
      */
-    static async updateF(key: string) {
+    static async laterF() {
         await (
             this._false ||
-            Promise.resolve(this.mainConfig.updateF?.((op) => {
-                return this.getConn('updateF', op);
-            }, key))
+            Promise.resolve(this.mainConfig.laterF?.((op) => {
+                return this.getConn('laterF', op);
+            }))
                 .catch((e) => {
-                    console.log(chalk.red('执行updateF出错:'), e);
+                    console.log(chalk.red('执行laterF出错:'), e);
                 })
         );
     }

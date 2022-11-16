@@ -27,8 +27,7 @@ export async function watchDf(key: string, localDir: string, remoteDir: string, 
             await mkDir(remoteDir, path.dirname(relativePath), sftp);
             //同步
             Manager.fastPut(_path, getComPath(onRemotePath), sftp).then(() => {
-                //触发更新回调
-                Manager.updateF(key);
+                Manager.execItemF(key, 'laterF')
             })
         }
     });

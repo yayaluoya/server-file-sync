@@ -77,6 +77,30 @@ var Manager = /** @class */ (function () {
         return this;
     };
     /**
+     * 通过key获取配置
+     * @param key
+     */
+    Manager.byKeyGetConfig = function (key) {
+        return this.mainConfig.syncList.find(function (_) {
+            return _.key == key;
+        });
+    };
+    /**
+     * 执行某一个同步项的某一个回调
+     * @param key
+     * @param fKey
+     */
+    Manager.execItemF = function (key, fKey) {
+        var _this = this;
+        var _a;
+        var onItem = this.byKeyGetConfig(key);
+        if (onItem) {
+            return Promise.resolve((_a = onItem[fKey]) === null || _a === void 0 ? void 0 : _a.call(onItem, function () {
+                return _this.getConn(fKey, (0, IConfig_1.getConnectConfig)(onItem));
+            }));
+        }
+    };
+    /**
      * 获取一个连接实例
      * @param title
      * @param connectConfig
@@ -96,7 +120,7 @@ var Manager = /** @class */ (function () {
             };
             try {
                 conn.connect(op).on('ready', function () {
-                    title && console.log(chalk_1.default.blue("\n\u670D\u52A1\u5668\u8FDE\u63A5\u6210\u529F".concat(title ? ':' + title : '', "\n")));
+                    title && console.log(chalk_1.default.blue("\n\u670D\u52A1\u5668\u8FDE\u63A5".concat(title ? ':' + title : '', "\n")));
                     r(conn);
                 }).on('error', errF);
             }
@@ -132,7 +156,7 @@ var Manager = /** @class */ (function () {
     /**
      * 同步之前的回调
      */
-    Manager.beforeF = function (key) {
+    Manager.beforeF = function () {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
@@ -141,7 +165,7 @@ var Manager = /** @class */ (function () {
                     case 0: return [4 /*yield*/, (this._false ||
                             Promise.resolve((_b = (_a = this.mainConfig).beforeF) === null || _b === void 0 ? void 0 : _b.call(_a, function (op) {
                                 return _this.getConn('beforeF', op);
-                            }, key))
+                            }))
                                 .catch(function (e) {
                                 console.log(chalk_1.default.red('执行beforeF出错:'), e);
                             }))];
@@ -153,20 +177,20 @@ var Manager = /** @class */ (function () {
         });
     };
     /**
-     * 更新回调
+     * 完成的回调
      */
-    Manager.updateF = function (key) {
+    Manager.laterF = function () {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0: return [4 /*yield*/, (this._false ||
-                            Promise.resolve((_b = (_a = this.mainConfig).updateF) === null || _b === void 0 ? void 0 : _b.call(_a, function (op) {
-                                return _this.getConn('updateF', op);
-                            }, key))
+                            Promise.resolve((_b = (_a = this.mainConfig).laterF) === null || _b === void 0 ? void 0 : _b.call(_a, function (op) {
+                                return _this.getConn('laterF', op);
+                            }))
                                 .catch(function (e) {
-                                console.log(chalk_1.default.red('执行updateF出错:'), e);
+                                console.log(chalk_1.default.red('执行laterF出错:'), e);
                             }))];
                     case 1:
                         _c.sent();

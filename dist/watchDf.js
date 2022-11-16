@@ -81,8 +81,7 @@ function watchDf(key, localDir, remoteDir, op, sftp) {
                             _a.sent();
                             //同步
                             Manager_1.Manager.fastPut(_path, (0, getComPath_1.getComPath)(onRemotePath), sftp).then(function () {
-                                //触发更新回调
-                                Manager_1.Manager.updateF(key);
+                                Manager_1.Manager.execItemF(key, 'laterF');
                             });
                             _a.label = 2;
                         case 2: return [2 /*return*/];

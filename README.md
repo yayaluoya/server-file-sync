@@ -51,15 +51,19 @@ export type TConfig = TConnectConfig & {
             /** 文件忽略，请注意不支持 Windows 样式的反斜杠作为分隔符*/
             ignored?: Matcher;
         }[],
+        /** 开始同步之前的回调 */
+        beforeF?: (connF: () => Promise<Client>) => Promise<void>;
+        /** 同步之后的回调 */
+        laterF?: (connF: () => Promise<Client>) => Promise<void>;
     } & TConnectConfig)[];
     /** ssh2的连接配置 */
     connectConfig?: ConnectConfig,
     /** 是否监听 */
     watch?: boolean;
     /** 开始同步之前的回调 */
-    beforeF?: (connF: (op?: TConnectConfig) => Promise<Client>, key: string) => Promise<void>;
-    /** 更新回调 */
-    updateF?: (connF: (op?: TConnectConfig) => Promise<Client>, key: string) => Promise<void>;
+    beforeF?: (connF: (op?: TConnectConfig) => Promise<Client>) => Promise<void>;
+    /** 同步之后的回调 */
+    laterF?: (connF: (op?: TConnectConfig) => Promise<Client>) => Promise<void>;
 }
 ```
 

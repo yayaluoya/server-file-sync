@@ -99,7 +99,7 @@ var cmdSecondCom_1 = require("yayaluoya-tool/dist/node/cmdSecondCom");
                     });
                 }
                 p.then(function () {
-                    fs_1.default.createReadStream(path_1.default.join(__dirname, '../../config.js')).pipe(fs_1.default.createWriteStream(getConfig_1.projectConfigUrl));
+                    fs_1.default.createReadStream(path_1.default.join(__dirname, '../../config_tem.js')).pipe(fs_1.default.createWriteStream(getConfig_1.projectConfigUrl));
                     console.log(chalk_1.default.green("\u914D\u7F6E\u6587\u4EF6\u521B\u5EFA\u6210\u529F ".concat(getConfig_1.projectConfigUrl)));
                 }).catch(function () {
                     console.log('已取消');
