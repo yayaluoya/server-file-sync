@@ -59,16 +59,22 @@ exports.getConfig = getConfig;
 function startSync(config, keys, demo) {
     if (demo === void 0) { demo = false; }
     return __awaiter(this, void 0, void 0, function () {
-        var defaultConfig, _a, _b;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
+        var defaultConfig, _a, _b, _c, _d, _e, _f;
+        return __generator(this, function (_g) {
+            switch (_g.label) {
                 case 0:
                     _b = (_a = ObjectUtils_1.ObjectUtils).clone2;
                     return [4 /*yield*/, getConfig_1.defaultConfig];
                 case 1:
-                    defaultConfig = _b.apply(_a, [_c.sent()]);
+                    defaultConfig = _b.apply(_a, [_g.sent()]);
                     //
-                    (0, index_1.start)(ObjectUtils_1.ObjectUtils.merge(defaultConfig, config), keys, demo);
+                    _c = index_1.start;
+                    _e = (_d = ObjectUtils_1.ObjectUtils).merge;
+                    _f = [defaultConfig];
+                    return [4 /*yield*/, config];
+                case 2:
+                    //
+                    _c.apply(void 0, [_e.apply(_d, _f.concat([_g.sent()])), keys, demo]);
                     return [2 /*return*/];
             }
         });

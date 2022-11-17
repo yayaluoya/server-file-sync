@@ -6,8 +6,8 @@ import { TConfig } from "../config/IConfig";
  */
 export class Vue2Plugin {
     constructor(
-        private config: TConfig,
-        private keys: string[],
+        private config: TConfig | Promise<TConfig>,
+        private keys: string | string[],
         private demo = false
     ) { }
 

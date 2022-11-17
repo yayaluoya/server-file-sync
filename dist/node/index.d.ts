@@ -12,5 +12,5 @@ export declare function getConfig(f: () => TConfig | Promise<TConfig>): TConfig 
  * TODO 注意配置中的地址要为绝对地址哦
  * @param config
  */
-export declare function startSync(config: TConfig, keys?: string[], demo?: boolean): Promise<void>;
+export declare function startSync(config: TConfig | Promise<TConfig>, keys?: string | string[], demo?: boolean): Promise<void>;
 //# sourceMappingURL=index.d.ts.map

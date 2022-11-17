@@ -11,12 +11,15 @@ import { cmdSecondCom } from "yayaluoya-tool/dist/node/cmdSecondCom";
 /**
  * 开始
  */
-export function start(config: TConfig, keys?: string[], demo = false) {
+export function start(config: TConfig, keys?: string | string[], demo = false) {
     //TODO 防😳
     config.syncList = ArrayUtils.arraify(config.syncList || []);
     config.syncList.forEach(_ => {
         _.paths = ArrayUtils.arraify(_.paths);
     });
+
+    // 数组化
+    keys = ArrayUtils.arraify(keys);
 
     //对config中的列表做判断
     if (keys && keys.length > 0) {

@@ -19,9 +19,9 @@ export function getConfig(f: () => TConfig | Promise<TConfig>) {
  * TODO 注意配置中的地址要为绝对地址哦
  * @param config 
  */
-export async function startSync(config: TConfig, keys?: string[], demo = false) {
+export async function startSync(config: TConfig | Promise<TConfig>, keys?: string | string[], demo = false) {
     /** 一个克隆的默认配置 */
     const defaultConfig = ObjectUtils.clone2(await defaultConfig_);
     //
-    start(ObjectUtils.merge(defaultConfig, config), keys, demo);
+    start(ObjectUtils.merge(defaultConfig, await config), keys, demo);
 }

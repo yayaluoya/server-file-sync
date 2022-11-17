@@ -70,6 +70,8 @@ function start(config, keys, demo) {
     config.syncList.forEach(function (_) {
         _.paths = ArrayUtils_1.ArrayUtils.arraify(_.paths);
     });
+    // 数组化
+    keys = ArrayUtils_1.ArrayUtils.arraify(keys);
     //对config中的列表做判断
     if (keys && keys.length > 0) {
         config.syncList = config.syncList.filter(function (_) {

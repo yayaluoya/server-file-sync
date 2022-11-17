@@ -2,7 +2,7 @@ import { TConfig } from "./config/IConfig";
 /**
  * 开始
  */
-export declare function start(config: TConfig, keys?: string[], demo?: boolean): void;
+export declare function start(config: TConfig, keys?: string | string[], demo?: boolean): void;
 /**
  * 上传
  * @param config 配置信息
