@@ -1,0 +1,10 @@
+#忽略所有node的包文件
+node_modules
+
+package-lock.json
+
+#忽略所有的密钥
+.ssh
+
+# 测试目录
+test

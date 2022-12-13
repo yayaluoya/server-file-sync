@@ -2,12 +2,7 @@ const { readFileSync } = require("fs");
 const path = require("path");
 const { join } = require("path");
 
-let getConfig;
-try {
-    getConfig = require("server-file-sync").getConfig;
-} catch {
-    getConfig = (_) => _();
-}
+const { getConfig } = require("server-file-sync");
 
 /**
  * server-file-sync 的默认配置文件
@@ -18,7 +13,7 @@ module.exports = getConfig(async () => {
     await new Promise((r, e) => {
         setTimeout(() => {
             r();
-        }, 3000);
+        }, 1000);
     });
     return {
         /** 主机地址 */
@@ -43,7 +38,7 @@ module.exports = getConfig(async () => {
                 /** 私钥字符串 */
                 privateKey: readFileSync(join(__dirname, './.ssh/asdf')),
                 /** 私钥密码 */
-                passphrase: 'asdf',
+                passphrase: '',
                 //
                 key: 'hh',
                 title: '测试的项目',
@@ -63,7 +58,7 @@ module.exports = getConfig(async () => {
                     return new Promise((r, e) => {
                         setTimeout(() => {
                             r();
-                        }, 3000);
+                        }, 1000);
                     });
                 },
                 laterF() {
@@ -78,7 +73,7 @@ module.exports = getConfig(async () => {
             return new Promise((r, e) => {
                 setTimeout(() => {
                     r();
-                }, 3000);
+                }, 1000);
             });
         },
         laterF(connF) {

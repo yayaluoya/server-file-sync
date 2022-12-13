@@ -5,6 +5,7 @@ import { getComPath } from "./utils/getComPath";
 import moment from "moment";
 import fs from "fs";
 import { getConnectConfig, TConfig, TConnectConfig } from "./config/IConfig";
+import inquirer from 'inquirer';
 
 /**
  * 管理器
@@ -58,7 +59,7 @@ export class Manager {
      * @returns 
      */
     static getConn(title = '', connectConfig?: TConnectConfig) {
-        return new Promise<Client>((r) => {
+        return new Promise<Client>(async (r) => {
             const conn = new ssh2.Client();
             //连接
             let op = {
@@ -66,9 +67,24 @@ export class Manager {
                 ...getConnectConfig(this.mainConfig),
                 ...connectConfig,
             };
+            // 如果有密钥却没有输入密钥密码的话就提示输入一次
+            if (op.privateKey && !op.passphrase) {
+                op.passphrase = await inquirer
+                    .prompt([
+                        {
+                            type: "password", // 交互类型 -- 密码
+                            message: `请输入${title ? ` ${title} 的` : ''}密钥密码:`, // 引导词
+                            name: "passphrase", // 自定义的字段名
+                            mask: '*',
+                        },
+                    ])
+                    .then(({ passphrase }) => {
+                        return passphrase as string;
+                    });
+            }
             let errF = (err) => {
-                console.log(chalk.red('服务器连接错误\n'), err);
-                console.log(chalk.red('错误配置'));
+                console.log(chalk.red('服务器连接错误:\n'), err);
+                console.log(chalk.red('错误配置:'));
                 console.dir(
                     op,
                     { depth: null }
@@ -149,7 +165,7 @@ export class Manager {
             //假连接就不传
             if (this._false) {
                 let fileState = fs.statSync(_path);
-                console.log(chalk.hex('#eebb4d')('同步演示'), _path, fileState.size / 1000 + 'KB', chalk.gray('-->'), chalk.green(getComPath(_remotePath)), chalk.gray(moment().format('HH:mm:ss')));
+                console.log(chalk.gray('同步演示'), _path, fileState.size / 1000 + 'KB', chalk.gray('-->'), chalk.green(getComPath(_remotePath)), chalk.gray(moment().format('HH:mm:ss')));
                 r();
                 return;
             }

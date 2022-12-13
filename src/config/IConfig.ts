@@ -46,10 +46,10 @@ export type TConfig = TConnectConfig & {
  */
 export function getConnectConfig(obj: TConnectConfig & Record<string, any>) {
     let o: TConnectConfig = {};
-    obj.host && (o.host = obj.host);
-    obj.port && (o.port = obj.port);
-    obj.username && (o.username = obj.username);
-    obj.passphrase && (o.passphrase = obj.passphrase);
-    obj.privateKey && (o.privateKey = obj.privateKey);
+    (typeof obj.host != 'undefined') && (o.host = obj.host);
+    (typeof obj.port != 'undefined') && (o.port = obj.port);
+    (typeof obj.username != 'undefined') && (o.username = obj.username);
+    (typeof obj.passphrase != 'undefined') && (o.passphrase = obj.passphrase);
+    (typeof obj.privateKey != 'undefined') && (o.privateKey = obj.privateKey);
     return o;
 }
