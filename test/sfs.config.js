@@ -25,7 +25,7 @@ module.exports = getConfig(async () => {
         /** 私钥字符串 */
         privateKey: readFileSync(join(__dirname, './.ssh/asdf')),
         /** 私钥密码 */
-        passphrase: 'asdf',
+        passphrase: '',
         /** 同步列表 */
         syncList: [
             {

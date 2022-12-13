@@ -112,7 +112,7 @@ export async function upload(config: TConfig, _false = false) {
                     sftp,
                 }) => {
                     for (let { local, remote, ignored } of paths) {
-                        console.log(chalk.hex('#fddb3a')(`同步->${title}@${key}: ${getAbsolute(local)} --> ${getComPath(remote)}`));
+                        console.log(chalk.bold(chalk.hex('#fddb3a')(`同步->${title}@${key}: ${getAbsolute(local)} --> ${getComPath(remote)}`)));
                         console.log(chalk.gray('---->'));
                         //同步
                         await syncDF(getAbsolute(local), getComPath(remote), sftp, ignored);

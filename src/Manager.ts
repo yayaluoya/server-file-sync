@@ -7,6 +7,9 @@ import fs from "fs";
 import { getConnectConfig, TConfig, TConnectConfig } from "./config/IConfig";
 import inquirer from 'inquirer';
 
+/** 密钥密码映射 */
+const privateKey_passphrase_map = new Map<string, string>();
+
 /**
  * 管理器
  */
@@ -69,18 +72,24 @@ export class Manager {
             };
             // 如果有密钥却没有输入密钥密码的话就提示输入一次
             if (op.privateKey && !op.passphrase) {
-                op.passphrase = await inquirer
-                    .prompt([
-                        {
-                            type: "password", // 交互类型 -- 密码
-                            message: `请输入${title ? ` ${title} 的` : ''}密钥密码:`, // 引导词
-                            name: "passphrase", // 自定义的字段名
-                            mask: '*',
-                        },
-                    ])
-                    .then(({ passphrase }) => {
-                        return passphrase as string;
-                    });
+                //先从映射中找密钥密码
+                op.passphrase = privateKey_passphrase_map.get(op.privateKey.toString());
+                if (!op.passphrase) {
+                    op.passphrase = await inquirer
+                        .prompt([
+                            {
+                                type: "password", // 交互类型 -- 密码
+                                message: `请输入${title ? ` ${title} 的` : ''}密钥密码:`, // 引导词
+                                name: "passphrase", // 自定义的字段名
+                                mask: '*',
+                            },
+                        ])
+                        .then(({ passphrase }) => {
+                            return passphrase as string;
+                        });
+                    //
+                    privateKey_passphrase_map.set(op.privateKey.toString(), op.passphrase);
+                }
             }
             let errF = (err) => {
                 console.log(chalk.red('服务器连接错误:\n'), err);
