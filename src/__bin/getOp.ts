@@ -14,6 +14,8 @@ export interface IOp extends IOp_ {
     debugConfig: string;
     /** 项目key列表 */
     keys: string;
+    /** 选择 */
+    select: boolean;
     /** 演示 */
     demo: boolean;
 }
@@ -28,6 +30,7 @@ export function getOp() {
             .option('-c --config <path>')
             .option('-dc --debug-config [path]')
             .option('-k --keys <keys>')
+            .option('-s --select')
             .option('-d --demo');
     });
 }

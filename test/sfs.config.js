@@ -41,7 +41,7 @@ module.exports = getConfig(async () => {
                 passphrase: '',
                 //
                 key: 'hh',
-                title: '测试的项目',
+                title: '测试项目',
                 paths: [
                     {
                         local: join(__dirname, './dist'),
@@ -64,6 +64,17 @@ module.exports = getConfig(async () => {
                 laterF() {
                     console.log(this.key, '同步完成');
                 },
+            },
+            {
+                key: 'hh2',
+                title: '测试项目2',
+                paths: [
+                    {
+                        local: join(__dirname, './dist'),
+                        remote: '/www/test/sfs-test',
+                        ignored: path.join(__dirname, './dist/a/**').replace(/\\+/g, '/'),
+                    },
+                ],
             },
         ],
         /** 是否监听 */

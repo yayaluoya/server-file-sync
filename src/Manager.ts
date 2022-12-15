@@ -101,7 +101,7 @@ export class Manager {
             }
             try {
                 conn.connect(op).on('ready', () => {
-                    title && console.log(chalk.blue(`\n服务器连接${title ? ':' + title : ''}\n`));
+                    title && console.log(chalk.greenBright(`\n服务器连接成功${title ? ':' + title : ''}\n`));
                     r(conn);
                 }).on('error', errF);
             } catch (err) {
@@ -174,7 +174,7 @@ export class Manager {
             //假连接就不传
             if (this._false) {
                 let fileState = fs.statSync(_path);
-                console.log(chalk.gray('同步演示'), _path, fileState.size / 1000 + 'KB', chalk.gray('-->'), chalk.green(getComPath(_remotePath)), chalk.gray(moment().format('HH:mm:ss')));
+                console.log(chalk.gray('同步演示'), _path, fileState.size / 1000 + 'KB', chalk.gray('->'), chalk.green(getComPath(_remotePath)), chalk.gray(moment().format('HH:mm:ss')));
                 r();
                 return;
             }
@@ -185,7 +185,7 @@ export class Manager {
                     e(err);
                     return;
                 }
-                console.log(chalk.gray('同步成功'), _path, chalk.gray('-->'), chalk.green(getComPath(_remotePath)), chalk.gray(moment().format('HH:mm:ss')));
+                console.log(chalk.gray('同步成功'), _path, chalk.gray('->'), chalk.blue(getComPath(_remotePath)), chalk.gray(moment().format('HH:mm:ss')));
                 r();
             });
         })

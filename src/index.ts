@@ -19,6 +19,7 @@ export function start(config: TConfig, keys?: string | string[], demo = false) {
     config.syncList.forEach(_ => {
         _.paths = ArrayUtils.arraify(_.paths);
     });
+    config.syncList = config.syncList.filter(_ => _.paths.length > 0);
 
     // 数组化
     keys = ArrayUtils.arraify(keys).filter(Boolean);
@@ -34,13 +35,13 @@ export function start(config: TConfig, keys?: string | string[], demo = false) {
         return;
     }
 
-    console.log(chalk.green('当前同步的列表:'));
-    for (let { key, title, paths } of config.syncList) {
-        console.log(chalk.yellow(`key: ${key} title: ${title}`));
+    console.log(chalk.bold(chalk.green('当前需要同步的项目列表:')));
+    config.syncList.forEach(({ key, title, paths }, index) => {
+        console.log((`  ${index + 1}.`), chalk.yellow(`${key}@${title}`));
         for (let path of paths) {
-            console.log(chalk.gray(`${path.local} -> ${path.remote}`));
+            console.log('    -', chalk.gray(`${path.local}`, chalk.gray('->'), chalk.blue(`${path.remote}`)));
         }
-    }
+    });
 
     //如果是演示的话需要再次确定
     if (demo) {
@@ -92,8 +93,8 @@ export async function upload(config: TConfig, _false = false) {
                 sftp,
             }) => {
                 for (let { local, remote, ignored } of paths) {
-                    console.log(chalk.hex('#fddb3a')(`监听->${title}@${key}: ${getAbsolute(local)} --> ${getComPath(remote)}`));
-                    console.log(chalk.gray('---->'));
+                    console.log(chalk.hex('#fddb3a')(`监听->${title}@${key}: ${getAbsolute(local)} -> ${getComPath(remote)}`));
+                    console.log(chalk.gray('->'));
                     watchDf(key, getAbsolute(local), getComPath(remote), {
                         ignored,
                     }, sftp);
@@ -107,13 +108,13 @@ export async function upload(config: TConfig, _false = false) {
         for (let { key, title, paths, ...connectConfig } of config.syncList) {
             await Manager.execItemF(key, 'beforeF');
             allP.push(
-                Manager.getSftp(`${key}@${title}`, getConnectConfig(connectConfig)).then(async ({
+                await Manager.getSftp(`${key}@${title}`, getConnectConfig(connectConfig)).then(async ({
                     conn,
                     sftp,
                 }) => {
                     for (let { local, remote, ignored } of paths) {
-                        console.log(chalk.bold(chalk.hex('#fddb3a')(`同步->${title}@${key}: ${getAbsolute(local)} --> ${getComPath(remote)}`)));
-                        console.log(chalk.gray('---->'));
+                        console.log(chalk.bold(chalk.hex('#fddb3a')(`同步->${title}@${key}: ${getAbsolute(local)} -> ${getComPath(remote)}`)));
+                        console.log(chalk.gray('->'));
                         //同步
                         await syncDF(getAbsolute(local), getComPath(remote), sftp, ignored);
                     }
@@ -128,6 +129,6 @@ export async function upload(config: TConfig, _false = false) {
         //
         await Manager.laterF();
         //
-        console.log(chalk.hex('#81b214')('\n同步完成'));
+        console.log(chalk.bold(chalk.hex('#81b214')('\n同步完成')));
     }
 }
