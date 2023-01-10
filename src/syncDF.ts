@@ -15,10 +15,12 @@ export async function syncDF(localDir: string, remoteDir: string, sftp: SFTPWrap
     if (ignored && anymatch(ignored, getComPath(localDir))) {
         return;
     }
-    let stat = fs.statSync(localDir);
-    if (stat.isFile()) {
+    let stat = fs.statSync(localDir, {
+        throwIfNoEntry: false,
+    });
+    if (stat?.isFile()) {
         await Manager.fastPut(localDir, getComPath(remoteDir), sftp);
-    } else if (stat.isDirectory()) {
+    } else if (stat?.isDirectory()) {
         //创建目录
         await Manager.mkdir(getComPath(remoteDir), sftp);
         //

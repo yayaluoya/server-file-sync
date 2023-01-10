@@ -192,7 +192,7 @@ export class Manager {
     }
 
     /** 
-     * 创建目录
+     * 创建目录，会递归创建完整的目录
      * 不管成功失败，都返回的成功解决的promise
      */
     static mkdir(dir: string, sftp: SFTPWrapper) {
@@ -202,9 +202,24 @@ export class Manager {
                 r();
                 return;
             }
-            sftp.mkdir(dir, (err) => {
-                r();
-            });
+            // 递归创建目录
+            let f = (targetDirs: string[], upDirs: string[]) => {
+                if (targetDirs.length <= 0) {
+                    r();
+                    return;
+                }
+                let onDirs = [...upDirs, targetDirs.shift() + '/',]
+                let targetDir = onDirs.join('');
+                sftp.stat(targetDir, (err, stat) => {
+                    if (!err || stat.isDirectory()) {
+                        f(onDirs, targetDirs);
+                    }
+                    sftp.mkdir(targetDir, (err) => {
+                        f(onDirs, targetDirs);
+                    });
+                });
+            }
+            f(dir.replace(/\//g, '/').split('/').filter(Boolean), ['/']);
         })
     }
 }

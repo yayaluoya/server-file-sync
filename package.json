@@ -1,6 +1,6 @@
 {
   "name": "server-file-sync",
-  "version": "1.6.11",
+  "version": "1.6.12",
   "description": "把本地文件同步到服务器指定目录，方便前端更新代码到服务器",
   "main": "index.js",
   "bin": {
