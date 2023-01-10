@@ -211,12 +211,13 @@ export class Manager {
                 let onDirs = [...upDirs, targetDirs.shift() + '/',]
                 let targetDir = onDirs.join('');
                 sftp.stat(targetDir, (err, stat) => {
-                    if (!err || stat.isDirectory()) {
-                        f(onDirs, targetDirs);
+                    if (!err && stat.isDirectory()) {
+                        f(targetDirs, onDirs);
+                    } else {
+                        sftp.mkdir(targetDir, (err) => {
+                            f(targetDirs, onDirs);
+                        });
                     }
-                    sftp.mkdir(targetDir, (err) => {
-                        f(onDirs, targetDirs);
-                    });
                 });
             }
             f(dir.replace(/\//g, '/').split('/').filter(Boolean), ['/']);

@@ -19,6 +19,9 @@ export async function syncDF(localDir: string, remoteDir: string, sftp: SFTPWrap
         throwIfNoEntry: false,
     });
     if (stat?.isFile()) {
+        //创建目录
+        await Manager.mkdir(getComPath(remoteDir.replace(/[^/]+$/, '')), sftp);
+        //
         await Manager.fastPut(localDir, getComPath(remoteDir), sftp);
     } else if (stat?.isDirectory()) {
         //创建目录
