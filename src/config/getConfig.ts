@@ -1,6 +1,6 @@
-import chalk from "chalk";
-import path from "path";
-import { TConfig } from "./IConfig";
+import chalk from 'chalk';
+import path from 'path';
+import { TConfig } from './IConfig';
 
 /**
  * 包配置文件
@@ -28,16 +28,16 @@ export const projectConfigUrl = path.join(process.cwd(), projectConfigName);
 
 /**
  * 获取cwd配置文件
- * @returns 
+ * @returns
  */
 export function getCwdConfig() {
-    return getConfig(projectConfigUrl, '配置文件导入错误!')
+    return getConfig(projectConfigUrl, '配置文件导入错误!');
 }
 
 /**
  * 根据路径获取自定义的配置文件
- * @param _url 
- * @param a 提示信息 
+ * @param _url
+ * @param a 提示信息
  */
 export function getConfig(_url: string, a?: string): Promise<TConfig> {
     let config = Promise.resolve({});

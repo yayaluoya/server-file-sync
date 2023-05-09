@@ -1,6 +1,6 @@
-import { IOp as IOp_, getCmdOp } from "yayaluoya-tool/dist/node/getCmdOp";
+import { IOp as IOp_, getCmdOp } from 'yayaluoya-tool/dist/node/getCmdOp';
 
-/** 
+/**
  * 命令行选项
  */
 export interface IOp extends IOp_ {
@@ -25,7 +25,8 @@ export interface IOp extends IOp_ {
  */
 export function getOp() {
     return getCmdOp<IOp>((program) => {
-        program.option('-h --help')
+        program
+            .option('-h --help')
             .option('-i --init')
             .option('-c --config <path>')
             .option('-dc --debug-config [path]')

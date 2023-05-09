@@ -1,14 +1,13 @@
-import { Manager } from "./Manager";
-import chalk from "chalk";
-import { syncDF } from "./syncDF";
-import { getAbsolute } from "./utils/getAbsolute";
-import { watchDf } from "./watchDf";
-import { getComPath } from "./utils/getComPath";
-import { ArrayUtils } from "yayaluoya-tool/dist/ArrayUtils";
-import { getConnectConfig, TConfig } from "./config/IConfig";
-import child_process from "child_process";
-import path from "path";
-
+import { Manager } from './Manager';
+import chalk from 'chalk';
+import { syncDF } from './syncDF';
+import { getAbsolute } from './utils/getAbsolute';
+import { watchDf } from './watchDf';
+import { getComPath } from './utils/getComPath';
+import { ArrayUtils } from 'yayaluoya-tool/dist/ArrayUtils';
+import { getConnectConfig, TConfig } from './config/IConfig';
+import child_process from 'child_process';
+import path from 'path';
 
 /**
  * 开始
@@ -16,10 +15,10 @@ import path from "path";
 export function start(config: TConfig, keys?: string | string[], demo = false) {
     //TODO 防😳
     config.syncList = ArrayUtils.arraify(config.syncList || []);
-    config.syncList.forEach(_ => {
+    config.syncList.forEach((_) => {
         _.paths = ArrayUtils.arraify(_.paths);
     });
-    config.syncList = config.syncList.filter(_ => _.paths.length > 0);
+    config.syncList = config.syncList.filter((_) => _.paths.length > 0);
 
     // 数组化
     keys = ArrayUtils.arraify(keys).filter(Boolean);
@@ -31,15 +30,26 @@ export function start(config: TConfig, keys?: string | string[], demo = false) {
         });
     }
     if (config.syncList.length <= 0) {
-        console.log(chalk.red('没有需要同步的内容，请在配置syncList中添加需要同步的列表，或者指定正确的 --keys 参数'));
+        console.log(
+            chalk.red(
+                '没有需要同步的内容，请在配置syncList中添加需要同步的列表，或者指定正确的 --keys 参数',
+            ),
+        );
         return;
     }
 
     console.log(chalk.bold(chalk.green('当前需要同步的项目列表:')));
     config.syncList.forEach(({ key, title, paths }, index) => {
-        console.log((`  ${index + 1}.`), chalk.yellow(`${key}@${title}`));
+        console.log(`  ${index + 1}.`, chalk.yellow(`${key}@${title}`));
         for (let path of paths) {
-            console.log('    -', chalk.gray(`${path.local}`, chalk.gray('->'), chalk.blue(`${path.remote}`)));
+            console.log(
+                '    -',
+                chalk.gray(
+                    `${path.local}`,
+                    chalk.gray('->'),
+                    chalk.blue(`${path.remote}`),
+                ),
+            );
         }
     });
 
@@ -88,18 +98,29 @@ export async function upload(config: TConfig, _false = false) {
     if (config.watch) {
         for (let { key, title, paths, ...connectConfig } of config.syncList) {
             await Manager.execItemF(key, 'beforeF');
-            Manager.getSftp(`${key}@${title}`, getConnectConfig(connectConfig)).then(async ({
-                conn,
-                sftp,
-            }) => {
-                for (let { local, remote, ignored } of paths) {
-                    console.log(chalk.hex('#fddb3a')(`监听->${title}@${key}: ${getAbsolute(local)} -> ${getComPath(remote)}`));
-                    console.log(chalk.gray('->'));
-                    watchDf(key, getAbsolute(local), getComPath(remote), {
-                        ignored,
-                    }, sftp);
-                }
-            });
+            Manager.getSftp(`${key}@${title}`, getConnectConfig(connectConfig)).then(
+                async ({ conn, sftp }) => {
+                    for (let { local, remote, ignored } of paths) {
+                        console.log(
+                            chalk.hex('#fddb3a')(
+                                `监听->${title}@${key}: ${getAbsolute(
+                                    local,
+                                )} -> ${getComPath(remote)}`,
+                            ),
+                        );
+                        console.log(chalk.gray('->'));
+                        watchDf(
+                            key,
+                            getAbsolute(local),
+                            getComPath(remote),
+                            {
+                                ignored,
+                            },
+                            sftp,
+                        );
+                    }
+                },
+            );
         }
     }
     //直接上传
@@ -108,21 +129,34 @@ export async function upload(config: TConfig, _false = false) {
         for (let { key, title, paths, ...connectConfig } of config.syncList) {
             await Manager.execItemF(key, 'beforeF');
             allP.push(
-                await Manager.getSftp(`${key}@${title}`, getConnectConfig(connectConfig)).then(async ({
-                    conn,
-                    sftp,
-                }) => {
+                await Manager.getSftp(
+                    `${key}@${title}`,
+                    getConnectConfig(connectConfig),
+                ).then(async ({ conn, sftp }) => {
                     for (let { local, remote, ignored } of paths) {
-                        console.log(chalk.bold(chalk.hex('#fddb3a')(`同步->${title}@${key}: ${getAbsolute(local)} -> ${getComPath(remote)}`)));
+                        console.log(
+                            chalk.bold(
+                                chalk.hex('#fddb3a')(
+                                    `同步->${title}@${key}: ${getAbsolute(
+                                        local,
+                                    )} -> ${getComPath(remote)}`,
+                                ),
+                            ),
+                        );
                         console.log(chalk.gray('->'));
                         //同步
-                        await syncDF(getAbsolute(local), getComPath(remote), sftp, ignored);
+                        await syncDF(
+                            getAbsolute(local),
+                            getComPath(remote),
+                            sftp,
+                            ignored,
+                        );
                     }
                     //关闭连接
                     conn.end();
                     //
                     await Manager.execItemF(key, 'laterF');
-                })
+                }),
             );
         }
         await Promise.all(allP);
