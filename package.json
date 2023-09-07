@@ -1,39 +1,39 @@
 {
-  "name": "server-file-sync",
-  "version": "1.6.15",
-  "description": "把本地文件同步到服务器指定目录，方便前端更新代码到服务器",
-  "main": "index.js",
-  "bin": {
-    "server-file-sync": "./dist/__bin/index.js",
-    "sfs": "./dist/__bin/index.js"
-  },
-  "scripts": {
-    "tsc-w": "tsc -w",
-    "npm-publish": "npm publish"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/yayaluoya/server-file-sync.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/yayaluoya/server-file-sync/issues"
-  },
-  "homepage": "https://github.com/yayaluoya/server-file-sync#readme",
-  "dependencies": {
-    "anymatch": "^3.1.2",
-    "chalk": "^4.1.2",
-    "chokidar": "^3.5.3",
-    "inquirer": "^8.2.5",
-    "moment": "^2.29.3",
-    "ssh2": "^1.10.0",
-    "vorpal": "^1.12.0",
-    "yayaluoya-tool": "1.7.5"
-  },
-  "devDependencies": {
-    "@types/inquirer": "^8.2.5",
-    "@types/node": "^17.0.34",
-    "@types/ssh2": "^0.5.52"
-  }
+    "name": "server-file-sync",
+    "version": "1.6.16",
+    "description": "把本地文件同步到服务器指定目录，方便前端更新代码到服务器",
+    "main": "index.js",
+    "bin": {
+        "server-file-sync": "./dist/__bin/index.js",
+        "sfs": "./dist/__bin/index.js"
+    },
+    "scripts": {
+        "tsc-w": "tsc -w",
+        "npm-publish": "npm publish"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/yayaluoya/server-file-sync.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/yayaluoya/server-file-sync/issues"
+    },
+    "homepage": "https://github.com/yayaluoya/server-file-sync#readme",
+    "dependencies": {
+        "@types/inquirer": "^9.0.3",
+        "@types/ssh2": "^1.11.13",
+        "anymatch": "^3.1.2",
+        "chalk": "^4.1.2",
+        "chokidar": "^3.5.3",
+        "inquirer": "^8.2.5",
+        "moment": "^2.29.3",
+        "ssh2": "^1.10.0",
+        "vorpal": "^1.12.0",
+        "yayaluoya-tool": "1.7.5"
+    },
+    "devDependencies": {
+        "@types/node": "^17.0.34"
+    }
 }
