@@ -1,4 +1,4 @@
 module.exports = {
-    ...require("./dist/node/index"),
-    ...require("./dist/node/Vue2Plugin"),
+  ...require('./dist/node/index'),
+  ...require('./dist/node/Vue2Plugin'),
 };

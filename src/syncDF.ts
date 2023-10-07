@@ -13,36 +13,31 @@ import { SFTPWrapper } from 'ssh2';
  * @param ignored
  */
 export async function syncDF(
-    localDir: string,
-    remoteDir: string,
-    sftp: SFTPWrapper,
-    ignored?: Matcher,
+  localDir: string,
+  remoteDir: string,
+  sftp: SFTPWrapper,
+  ignored?: Matcher,
 ) {
-    //忽略
-    if (ignored && anymatch(ignored, getComPath(localDir))) {
-        return;
-    }
-    let stat = fs.statSync(localDir, {
-        throwIfNoEntry: false,
-    });
-    if (stat?.isFile()) {
-        //创建目录
-        await Manager.mkdir(getComPath(remoteDir.replace(/[^/]+$/, '')), sftp);
-        //
-        await Manager.fastPut(localDir, getComPath(remoteDir), sftp);
-    } else if (stat?.isDirectory()) {
-        //创建目录
-        await Manager.mkdir(getComPath(remoteDir), sftp);
-        //
-        await Promise.all(
-            fs.readdirSync(localDir).map((o) => {
-                return syncDF(
-                    path.join(localDir, o),
-                    path.join(remoteDir, o),
-                    sftp,
-                    ignored,
-                );
-            }),
-        );
-    }
+  //忽略
+  if (ignored && anymatch(ignored, getComPath(localDir))) {
+    return;
+  }
+  let stat = fs.statSync(localDir, {
+    throwIfNoEntry: false,
+  });
+  if (stat?.isFile()) {
+    //创建目录
+    await Manager.mkdir(getComPath(remoteDir.replace(/[^/]+$/, '')), sftp);
+    //
+    await Manager.fastPut(localDir, getComPath(remoteDir), sftp);
+  } else if (stat?.isDirectory()) {
+    //创建目录
+    await Manager.mkdir(getComPath(remoteDir), sftp);
+    //
+    await Promise.all(
+      fs.readdirSync(localDir).map((o) => {
+        return syncDF(path.join(localDir, o), path.join(remoteDir, o), sftp, ignored);
+      }),
+    );
+  }
 }

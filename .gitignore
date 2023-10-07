@@ -1,9 +1,6 @@
-# 放密钥的文件夹
-.ssh
-
 # node的包
 node_modules
-
 package-lock.json
+/dist
 
-dist
+/test/.ssh

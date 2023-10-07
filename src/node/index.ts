@@ -1,4 +1,4 @@
-import { ObjectUtils } from 'yayaluoya-tool/dist/obj/ObjectUtils';
+import { ObjectUtils } from '@T/obj/ObjectUtils';
 import { TConfig } from '../config/IConfig';
 import { start } from '../index';
 import { defaultConfig as defaultConfig_ } from '../config/getConfig';
@@ -10,7 +10,7 @@ import { defaultConfig as defaultConfig_ } from '../config/getConfig';
  * @param f
  */
 export function getConfig(f: () => TConfig | Promise<TConfig>) {
-    return f();
+  return f();
 }
 
 /**
@@ -22,12 +22,12 @@ export function getConfig(f: () => TConfig | Promise<TConfig>) {
  * @param demo
  */
 export async function startSync(
-    config: TConfig | Promise<TConfig>,
-    keys?: string | string[],
-    demo = false,
+  config: TConfig | Promise<TConfig>,
+  keys?: string | string[],
+  demo = false,
 ) {
-    /** 一个克隆的默认配置 */
-    const defaultConfig = ObjectUtils.clone2(await defaultConfig_);
-    //
-    start(ObjectUtils.merge(defaultConfig, await config), keys, demo);
+  /** 一个克隆的默认配置 */
+  const defaultConfig = ObjectUtils.clone2(await defaultConfig_);
+  //
+  start(ObjectUtils.merge(defaultConfig, await config), keys, demo);
 }
