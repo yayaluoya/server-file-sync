@@ -8,7 +8,7 @@
     "sfs": "./dist/__bin/index.js"
   },
   "scripts": {
-    "tsc-w": "tsc && (concurrently \"tsc -w\" \"tsc-alias -w\")",
+    "tsc-w": "tsc -w",
     "npm-publish": "npm publish"
   },
   "repository": {
@@ -27,13 +27,13 @@
     "anymatch": "^3.1.2",
     "chalk": "^4.1.2",
     "chokidar": "^3.5.3",
+    "commander": "^11.0.0",
     "inquirer": "^8.2.5",
     "moment": "^2.29.3",
     "ssh2": "^1.10.0",
     "vorpal": "^1.12.0"
   },
   "devDependencies": {
-    "@types/node": "^17.0.34",
-    "tsc-alias": "^1.8.8"
+    "@types/node": "^17.0.34"
   }
 }

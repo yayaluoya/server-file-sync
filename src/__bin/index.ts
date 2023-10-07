@@ -3,7 +3,7 @@ import { start } from '..';
 import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk';
-import { ObjectUtils } from '@T/obj/ObjectUtils';
+import { ObjectUtils } from '../../yayaluoya-tool/obj/ObjectUtils';
 import { getAbsolute } from '../utils/getAbsolute';
 import { getOp } from './getOp';
 import {
@@ -13,9 +13,9 @@ import {
   projectConfigUrl,
 } from '../config/getConfig';
 import { getConfig } from '../config/getConfig';
-import { cmdSecondCom } from '@T/node/cmdSecondCom';
+import { cmdSecondCom } from '../../yayaluoya-tool/node/cmdSecondCom';
 import inquirer from 'inquirer';
-import { ArrayUtils } from '@T/ArrayUtils';
+import { ArrayUtils } from '../../yayaluoya-tool/ArrayUtils';
 
 (async () => {
   /** 一个克隆的默认配置 */

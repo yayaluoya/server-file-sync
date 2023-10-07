@@ -1,4 +1,4 @@
-import { ArrayUtils } from '@T/ArrayUtils';
+import { ArrayUtils } from '../yayaluoya-tool/ArrayUtils';
 import { Manager } from './Manager';
 import chalk from 'chalk';
 import { syncDF } from './syncDF';

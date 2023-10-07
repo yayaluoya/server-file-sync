@@ -1,4 +1,4 @@
-import { IOp as IOp_, getCmdOp } from '@T/node/getCmdOp';
+import { IOp as IOp_, getCmdOp } from '../../yayaluoya-tool/node/getCmdOp';
 
 /**
  * 命令行选项

@@ -1,4 +1,4 @@
-import { ObjectUtils } from '@T/obj/ObjectUtils';
+import { ObjectUtils } from '../../yayaluoya-tool/obj/ObjectUtils';
 import { TConfig } from '../config/IConfig';
 import { start } from '../index';
 import { defaultConfig as defaultConfig_ } from '../config/getConfig';
