@@ -6,7 +6,5 @@ package-lock.json
 # 测试目录
 /test
 
-/src
-
 /.vscode
 /.idea

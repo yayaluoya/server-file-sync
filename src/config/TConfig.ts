@@ -45,18 +45,3 @@ export type TConfig = TConnectConfig & {
   /** 同步之后的回调 */
   laterF?: (connF: (op?: TConnectConfig) => Promise<Client>) => Promise<void>;
 };
-
-/**
- * 从一个对象中提取ssh2的连接配置
- * @param obj
- * @returns
- */
-export function getConnectConfig(obj: TConnectConfig & Record<string, any>) {
-  let o: TConnectConfig = {};
-  typeof obj.host != 'undefined' && (o.host = obj.host);
-  typeof obj.port != 'undefined' && (o.port = obj.port);
-  typeof obj.username != 'undefined' && (o.username = obj.username);
-  typeof obj.passphrase != 'undefined' && (o.passphrase = obj.passphrase);
-  typeof obj.privateKey != 'undefined' && (o.privateKey = obj.privateKey);
-  return o;
-}

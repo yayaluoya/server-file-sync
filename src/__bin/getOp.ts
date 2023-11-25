@@ -6,6 +6,8 @@ import { IOp as IOp_, getCmdOp } from '../../yayaluoya-tool/node/getCmdOp';
 export interface IOp extends IOp_ {
   /** 帮助 */
   help: boolean;
+  /** 项目路径 */
+  projectPath: string;
   /** 初始化 */
   init: boolean;
   /** 配置文件 */
@@ -16,7 +18,7 @@ export interface IOp extends IOp_ {
   keys: string;
   /** 选择 */
   select: boolean;
-  /** 演示 */
+  /** 演示，就是看下效果，不上传 */
   demo: boolean;
 }
 
@@ -27,6 +29,7 @@ export function getOp() {
   return getCmdOp<IOp>((program) => {
     program
       .option('-h --help')
+      .option('-pp --project-path <path>')
       .option('-i --init')
       .option('-c --config <path>')
       .option('-dc --debug-config [path]')

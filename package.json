@@ -1,6 +1,6 @@
 {
   "name": "server-file-sync",
-  "version": "1.6.17",
+  "version": "1.7.0",
   "description": "把本地文件同步到服务器指定目录，方便前端更新代码到服务器",
   "main": "index.js",
   "bin": {
@@ -15,11 +15,12 @@
     "type": "git",
     "url": "git+https://github.com/yayaluoya/server-file-sync.git"
   },
-  "author": "",
+  "author": "yayaluoya <yayaluoya@sina.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/yayaluoya/server-file-sync/issues"
   },
+  "issues": "https://github.com/yayaluoya/server-file-sync/issues",
   "homepage": "https://github.com/yayaluoya/server-file-sync#readme",
   "dependencies": {
     "@types/inquirer": "^9.0.3",

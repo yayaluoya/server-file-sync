@@ -5,9 +5,11 @@ import { syncDF } from './syncDF';
 import { getAbsolute } from './utils/getAbsolute';
 import { watchDf } from './watchDf';
 import { getComPath } from './utils/getComPath';
-import { getConnectConfig, TConfig } from './config/IConfig';
 import child_process from 'child_process';
 import path from 'path';
+import { TConfig } from './config/TConfig';
+import { getConnectConfig } from './config';
+import { Client, SFTPWrapper } from 'ssh2';
 
 /**
  * 开始
@@ -40,7 +42,7 @@ export function start(config: TConfig, keys?: string | string[], demo = false) {
 
   console.log(chalk.bold(chalk.green('当前需要同步的项目列表:')));
   config.syncList.forEach(({ key, title, paths }, index) => {
-    console.log(`  ${index + 1}.`, chalk.yellow(`${key}@${title}`));
+    console.log(`  ${index + 1}.`, chalk.yellow(`${title} [${key}]`));
     for (let path of paths) {
       console.log(
         '    -',
@@ -92,65 +94,74 @@ export async function upload(config: TConfig, _false = false) {
   await Manager.beforeF();
   //查看是否监听
   if (config.watch) {
+    let watchs: {
+      key: string;
+      title: string;
+      paths: getArrayT<TConfig['syncList']>['paths'];
+      conn: Client;
+      sftp: SFTPWrapper;
+    }[] = [];
     for (let { key, title, paths, ...connectConfig } of config.syncList) {
       await Manager.execItemF(key, 'beforeF');
-      Manager.getSftp(`${key}@${title}`, getConnectConfig(connectConfig)).then(
-        async ({ conn, sftp }) => {
-          for (let { local, remote, ignored } of paths) {
-            console.log(
-              chalk.hex('#fddb3a')(
-                `监听->${title}@${key}: ${getAbsolute(local)} -> ${getComPath(remote)}`,
-              ),
-            );
-            console.log(chalk.gray('->'));
-            watchDf(
-              key,
-              getAbsolute(local),
-              getComPath(remote),
-              {
-                ignored,
-              },
-              sftp,
-            );
-          }
-        },
-      );
+      watchs.push({
+        key,
+        title,
+        paths,
+        ...(await Manager.getSftp(`${title} [${key}]`, getConnectConfig(connectConfig))),
+      });
+      for (let { local, remote, ignored } of paths) {
+        console.log(
+          chalk.hex('#fddb3a')(
+            `开始监听 -> ${title} [${key}]: ${getAbsolute(local)} -> ${getComPath(
+              remote,
+            )}`,
+          ),
+        );
+      }
     }
+    watchs.forEach(({ conn, sftp, key, title, paths }) => {
+      for (let { local, remote, ignored } of paths) {
+        watchDf(
+          key,
+          getAbsolute(local),
+          getComPath(remote),
+          {
+            ignored,
+          },
+          sftp,
+        );
+      }
+    });
   }
   //直接上传
   else {
-    let allP = [];
     for (let { key, title, paths, ...connectConfig } of config.syncList) {
       await Manager.execItemF(key, 'beforeF');
-      allP.push(
-        await Manager.getSftp(`${key}@${title}`, getConnectConfig(connectConfig)).then(
-          async ({ conn, sftp }) => {
-            for (let { local, remote, ignored } of paths) {
-              console.log(
-                chalk.bold(
-                  chalk.hex('#fddb3a')(
-                    `同步->${title}@${key}: ${getAbsolute(local)} -> ${getComPath(
-                      remote,
-                    )}`,
-                  ),
+      await Manager.getSftp(`${title} [${key}]`, getConnectConfig(connectConfig)).then(
+        async ({ conn, sftp }) => {
+          for (let { local, remote, ignored } of paths) {
+            console.log(
+              chalk.bold(
+                chalk.hex('#fddb3a')(
+                  `开始同步 -> ${title} [${key}]: ${getAbsolute(local)} -> ${getComPath(
+                    remote,
+                  )}`,
                 ),
-              );
-              console.log(chalk.gray('->'));
-              //同步
-              await syncDF(getAbsolute(local), getComPath(remote), sftp, ignored);
-            }
-            //关闭连接
-            conn.end();
-            //
-            await Manager.execItemF(key, 'laterF');
-          },
-        ),
+              ),
+            );
+            //同步
+            await syncDF(getAbsolute(local), getComPath(remote), sftp, ignored);
+          }
+          //关闭连接
+          conn.end();
+          //
+          await Manager.execItemF(key, 'laterF');
+        },
       );
     }
-    await Promise.all(allP);
     //
     await Manager.laterF();
     //
-    console.log(chalk.bold(chalk.hex('#81b214')('\n同步完成')));
+    console.log(chalk.bold(chalk.hex('#81b214')('同步完成')));
   }
 }

@@ -1,17 +1,7 @@
 import { ObjectUtils } from '../../yayaluoya-tool/obj/ObjectUtils';
-import { TConfig } from '../config/IConfig';
+import { getDefConfig } from '../config';
+import { TConfig } from '../config/TConfig';
 import { start } from '../index';
-import { defaultConfig as defaultConfig_ } from '../config/getConfig';
-
-/**
- * 获取配置
- * 主要是为外界提供ts的能力
- * @returns
- * @param f
- */
-export function getConfig(f: () => TConfig | Promise<TConfig>) {
-  return f();
-}
 
 /**
  * 开始同步
@@ -26,8 +16,5 @@ export async function startSync(
   keys?: string | string[],
   demo = false,
 ) {
-  /** 一个克隆的默认配置 */
-  const defaultConfig = ObjectUtils.clone2(await defaultConfig_);
-  //
-  start(ObjectUtils.merge(defaultConfig, await config), keys, demo);
+  start(ObjectUtils.merge(getDefConfig(), await config), keys, demo);
 }

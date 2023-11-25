@@ -1,5 +1,5 @@
 import { startSync } from '.';
-import { TConfig } from '../config/IConfig';
+import { TConfig } from '../config/TConfig';
 
 /**
  * vue2上传插件

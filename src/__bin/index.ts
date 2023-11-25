@@ -6,31 +6,46 @@ import chalk from 'chalk';
 import { ObjectUtils } from '../../yayaluoya-tool/obj/ObjectUtils';
 import { getAbsolute } from '../utils/getAbsolute';
 import { getOp } from './getOp';
-import {
-  defaultConfig as defaultConfig_,
-  getCwdConfig,
-  packageJSON,
-  projectConfigUrl,
-} from '../config/getConfig';
-import { getConfig } from '../config/getConfig';
 import { cmdSecondCom } from '../../yayaluoya-tool/node/cmdSecondCom';
 import inquirer from 'inquirer';
 import { ArrayUtils } from '../../yayaluoya-tool/ArrayUtils';
+import {
+  getConfig,
+  getDefConfig,
+  getProjectDefConfig,
+  getProjectDefConfigName,
+  packageJSON,
+  temConfigPath,
+} from '../config';
+import { PathManger } from '../manager/PathManger';
+import { TConfig } from '../config/TConfig';
 
 (async () => {
   /** 一个克隆的默认配置 */
-  const defaultConfig = ObjectUtils.clone2(await defaultConfig_);
+  const defaultConfig = getDefConfig();
   /** 命令行选项 */
   const opts = getOp();
+  /**
+   * 先处理cwd
+   * TODO 因为后续的很多方法都要依赖cwd
+   */
+  if (typeof opts.projectPath == 'string' && opts.projectPath) {
+    PathManger.cwd = getAbsolute(opts.projectPath);
+  }
   /** 处理命令行的各个配置 */
   switch (true) {
     case Boolean(opts.version):
-      console.log(chalk.green('当前sfs版本@ ') + chalk.yellow(packageJSON.version));
+      console.log(
+        chalk.green(`当前${packageJSON.name}版本@ `) + chalk.yellow(packageJSON.version),
+      );
       break;
     case Boolean(opts.help):
-      console.log(chalk.hex('#d2e603')('sfs的所有命令😀:'));
+      console.log(chalk.hex('#d2e603')(`${packageJSON.name}的所有命令😀:`));
       console.log(chalk.green('   -v --version ') + chalk.gray('查看当前工具版本'));
       console.log(chalk.green('   -h --help ') + chalk.gray('查看所有的命令和帮助信息'));
+      console.log(
+        chalk.green('   -pp --project-path <path> ') + chalk.gray('指定项目路径'),
+      );
       console.log(
         chalk.green('   -i --init ') + chalk.gray('在当前执行目录下生成默认配置文件'),
       );
@@ -59,26 +74,25 @@ import { ArrayUtils } from '../../yayaluoya-tool/ArrayUtils';
       console.log(chalk.gray('    完整命令为server-file-sync，快捷命令为sfs'));
       console.log(
         chalk.gray(
-          '    默认自定义配置是当前工具执行路径下的sfs.config.js文件，可以执行sfs -i 快速生成配置文件',
+          `    默认配置是当前工具执行路径下的 ${getProjectDefConfigName()} 文件，可以执行sfs -i 快速生成配置文件`,
         ),
       );
-      console.log(
-        chalk.gray(
-          '    如果有什么问题请在 https://github.com/yayaluoya/server-file-sync/issues 提出',
-        ),
-      );
+      console.log(chalk.gray(`    如果有什么问题请在 ${packageJSON.issues} 提出`));
       break;
     case Boolean(opts.init):
       let p = Promise.resolve();
       if (
         fs
-          .statSync(projectConfigUrl, {
+          .statSync(path.join(PathManger.cwd, getProjectDefConfigName()), {
             throwIfNoEntry: false,
           })
           ?.isFile()
       ) {
         p = cmdSecondCom(
-          `已经存在配置文件了${projectConfigUrl}，是否覆盖 是:y/Y 输入其他字符取消: `,
+          `已经存在配置文件了 ${path.join(
+            PathManger.cwd,
+            getProjectDefConfigName(),
+          )} 是否覆盖 是:y/Y 输入其他字符取消: `,
         ).then((input) => {
           if (!/^y$/i.test(input)) {
             throw '';
@@ -86,12 +100,27 @@ import { ArrayUtils } from '../../yayaluoya-tool/ArrayUtils';
         });
       }
       p.then(() => {
-        fs.createReadStream(path.join(__dirname, '../../config_tem.js')).pipe(
-          fs.createWriteStream(projectConfigUrl),
+        let temStr = fs.readFileSync(temConfigPath).toString();
+        fs.writeFileSync(
+          path.join(PathManger.cwd, getProjectDefConfigName()),
+          `${temStr}
+/** 
+ * name: ${packageJSON.name}
+ * version: ${packageJSON.version}
+ * description: ${packageJSON.description}
+ * author: ${packageJSON.author}
+ * homepage: ${packageJSON.homepage}
+ * issues: ${packageJSON.issues}
+*/
+        `,
         );
-        console.log(chalk.green(`配置文件创建成功 ${projectConfigUrl}`));
-      }).catch(() => {
-        console.log('已取消');
+        console.log(
+          chalk.green(
+            `配置文件创建成功 ${path.join(PathManger.cwd, getProjectDefConfigName())}`,
+          ),
+        );
+      }).catch((err) => {
+        console.log('已取消', err);
       });
       break;
     case Boolean(opts.debugConfig):
@@ -105,7 +134,7 @@ import { ArrayUtils } from '../../yayaluoya-tool/ArrayUtils';
           { depth: null },
         );
       } else {
-        console.dir(ObjectUtils.merge(defaultConfig, await getCwdConfig()), {
+        console.dir(ObjectUtils.merge(defaultConfig, await getProjectDefConfig()), {
           depth: null,
         });
       }
@@ -116,13 +145,18 @@ import { ArrayUtils } from '../../yayaluoya-tool/ArrayUtils';
       if (Boolean(opts.config)) {
         ObjectUtils.merge(
           defaultConfig,
-          await getConfig(
-            getAbsolute(opts.config),
-            '配置文件导入错误，将以默认配置运行!',
-          ),
+          await new Promise<TConfig>((res) => {
+            res(
+              getConfig(getAbsolute(opts.config), async (err) => {
+                console.log(chalk.red('配置文件导入错误，将以项目配置运行!'));
+                console.log(err);
+                res(getProjectDefConfig());
+              }),
+            );
+          }),
         );
       } else {
-        ObjectUtils.merge(defaultConfig, await getCwdConfig());
+        ObjectUtils.merge(defaultConfig, await getProjectDefConfig());
       }
       let keys = opts.keys?.split(/[,，]/);
       // 手动在选择一次
@@ -134,7 +168,7 @@ import { ArrayUtils } from '../../yayaluoya-tool/ArrayUtils';
             message: '选择项目-按空格键选择，按enter键确认:',
             choices: ArrayUtils.arraify(defaultConfig.syncList).map((_) => {
               return {
-                name: `${_.key}@${_.title}`,
+                name: `${_.title} [${_.key}]`,
                 value: _.key,
               };
             }),

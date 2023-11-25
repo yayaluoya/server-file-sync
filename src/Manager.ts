@@ -4,8 +4,9 @@ import chalk from 'chalk';
 import { getComPath } from './utils/getComPath';
 import moment from 'moment';
 import fs from 'fs';
-import { getConnectConfig, TConfig, TConnectConfig } from './config/IConfig';
 import inquirer from 'inquirer';
+import { TConfig, TConnectConfig } from './config/TConfig';
+import { getConnectConfig } from './config';
 
 /** 密钥密码映射 */
 const privateKey_passphrase_map = new Map<string, string>();
@@ -105,7 +106,7 @@ export class Manager {
         }
       }
       let errF = (err) => {
-        console.log(chalk.red('服务器连接错误:\n'), err);
+        console.log(chalk.red('服务器连接错误:'), err);
         console.log(chalk.red('错误配置:'));
         console.dir(op, { depth: null });
       };
@@ -114,9 +115,7 @@ export class Manager {
           .connect(op)
           .on('ready', () => {
             title &&
-              console.log(
-                chalk.greenBright(`\n服务器连接成功${title ? ':' + title : ''}\n`),
-              );
+              console.log(chalk.greenBright(`服务器连接成功${title ? ':' + title : ''}`));
             r(conn);
           })
           .on('error', errF);
@@ -141,7 +140,7 @@ export class Manager {
         conn.sftp((err, sftp) => {
           if (err) {
             title &&
-              console.log(chalk.red(`sftp连接失败!${title ? ':' + title : ''}\n`), err);
+              console.log(chalk.red(`sftp连接失败!${title ? ':' + title : ''}`), err);
             e();
             return;
           }
@@ -193,7 +192,6 @@ export class Manager {
           chalk.gray('同步演示'),
           _path,
           fileState.size / 1000 + 'KB',
-          chalk.gray('->'),
           chalk.green(getComPath(_remotePath)),
           chalk.gray(moment().format('HH:mm:ss')),
         );
@@ -210,7 +208,6 @@ export class Manager {
         console.log(
           chalk.gray('同步成功'),
           _path,
-          chalk.gray('->'),
           chalk.blue(getComPath(_remotePath)),
           chalk.gray(moment().format('HH:mm:ss')),
         );
