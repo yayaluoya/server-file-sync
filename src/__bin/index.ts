@@ -7,8 +7,6 @@ import { ObjectUtils } from '../../yayaluoya-tool/obj/ObjectUtils';
 import { getAbsolute } from '../utils/getAbsolute';
 import { getOp } from './getOp';
 import { cmdSecondCom } from '../../yayaluoya-tool/node/cmdSecondCom';
-import inquirer from 'inquirer';
-import { ArrayUtils } from '../../yayaluoya-tool/ArrayUtils';
 import {
   getConfig,
   getDefConfig,
@@ -158,31 +156,9 @@ import { TConfig } from '../config/TConfig';
       } else {
         ObjectUtils.merge(defaultConfig, await getProjectDefConfig());
       }
+      //
       let keys = opts.keys?.split(/[,，]/);
-      // 手动在选择一次
-      if (opts.select) {
-        keys = await inquirer
-          .prompt({
-            type: 'checkbox',
-            name: 'select',
-            message: '选择项目-按空格键选择，按enter键确认:',
-            choices: ArrayUtils.arraify(defaultConfig.syncList).map((_) => {
-              return {
-                name: `${_.title} [${_.key}]`,
-                value: _.key,
-              };
-            }),
-            default: keys || [],
-            pageSize: 20,
-          })
-          .then(({ select }: { select: string[] }) => {
-            return select;
-          });
-        if (keys.length <= 0) {
-          return;
-        }
-      }
       //正式运行
-      start(defaultConfig, keys, opts.demo);
+      start(defaultConfig, keys, opts.select, opts.demo);
   }
 })();

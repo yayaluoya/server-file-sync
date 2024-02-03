@@ -9,12 +9,14 @@ import { start } from '../index';
  * TODO 注意配置中的地址要为绝对地址哦
  * @param config
  * @param keys
+ * @param select 是否手动在选择一次
  * @param demo
  */
 export async function startSync(
   config: TConfig | Promise<TConfig>,
   keys?: string | string[],
+  select = false,
   demo = false,
 ) {
-  start(ObjectUtils.merge(getDefConfig(), await config), keys, demo);
+  start(ObjectUtils.merge(getDefConfig(), await config), keys, select, demo);
 }

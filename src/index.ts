@@ -1,4 +1,3 @@
-import { ArrayUtils } from '../yayaluoya-tool/ArrayUtils';
 import { Manager } from './Manager';
 import chalk from 'chalk';
 import { syncDF } from './syncDF';
@@ -10,12 +9,23 @@ import path from 'path';
 import { TConfig } from './config/TConfig';
 import { getConnectConfig } from './config';
 import { Client, SFTPWrapper } from 'ssh2';
+import inquirer from 'inquirer';
+import { ArrayUtils } from '../yayaluoya-tool/ArrayUtils';
 
 /**
  * 开始
+ * @param config 配置信息
+ * @param keys 目标keys，不传或者为空的话就全部
+ * @param select 是否手动在选择一次
+ * @param demo 是否演示
+ * @returns
  */
-export function start(config: TConfig, keys?: string | string[], demo = false) {
-  //TODO 防😳
+export async function start(
+  config: TConfig,
+  keys?: string | string[],
+  select = false,
+  demo = false,
+) {
   config.syncList = ArrayUtils.arraify(config.syncList || []);
   config.syncList.forEach((_) => {
     _.paths = ArrayUtils.arraify(_.paths);
@@ -25,18 +35,57 @@ export function start(config: TConfig, keys?: string | string[], demo = false) {
   // 数组化
   keys = ArrayUtils.arraify(keys).filter(Boolean);
 
-  //对config中的列表做判断
-  if (keys && keys.length > 0) {
-    config.syncList = config.syncList.filter((_) => {
-      return keys.includes(_.key);
-    });
+  /**
+   * 验证keys，如果返回false则退出
+   * @returns
+   */
+  let v_keys = () => {
+    //对config中的列表做判断
+    if (keys && keys.length > 0) {
+      config.syncList = config.syncList.filter((_) => {
+        return keys.includes(_.key);
+      });
+    }
+    if (config.syncList.length <= 0) {
+      console.log(
+        chalk.red(
+          '没有需要同步的内容，请在配置syncList中添加需要同步的列表，或者指定正确的 --keys 参数',
+        ),
+      );
+      return false;
+    }
+    return true;
+  };
+
+  if (!v_keys()) {
+    return;
   }
-  if (config.syncList.length <= 0) {
-    console.log(
-      chalk.red(
-        '没有需要同步的内容，请在配置syncList中添加需要同步的列表，或者指定正确的 --keys 参数',
-      ),
-    );
+
+  // 手动在选择一次
+  if (select) {
+    keys = await inquirer
+      .prompt({
+        type: 'checkbox',
+        name: 'select',
+        message: '选择项目-按空格键选择，按enter键确认:',
+        choices: config.syncList.map((_) => {
+          return {
+            name: `${_.title} [${_.key}]`,
+            value: _.key,
+          };
+        }),
+        default: keys || [],
+        pageSize: 20,
+      })
+      .then(({ select }: { select: string[] }) => {
+        return select;
+      });
+    if (keys.length <= 0) {
+      return;
+    }
+  }
+
+  if (!v_keys()) {
     return;
   }
 
