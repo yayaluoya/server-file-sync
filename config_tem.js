@@ -7,8 +7,6 @@ module.exports = async function () {
     host: '',
     port: 22,
     username: 'root',
-    passphrase: '',
-    privateKey: '',
     syncList: [],
     connectConfig: {},
     watch: false,

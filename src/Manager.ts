@@ -81,11 +81,12 @@ export class Manager {
         ...getConnectConfig(this.mainConfig),
         ...connectConfig,
       };
+      // console.log('获取连接实例', op);
       // 如果有密钥却没有输入密钥密码的话就提示输入一次
-      if (op.privateKey && !op.passphrase) {
+      if (op.privateKey && typeof op.passphrase == 'undefined') {
         //先从映射中找密钥密码
         op.passphrase = privateKey_passphrase_map.get(op.privateKey.toString());
-        if (!op.passphrase) {
+        if (typeof op.passphrase == 'undefined') {
           op.passphrase = await inquirer
             .prompt([
               {

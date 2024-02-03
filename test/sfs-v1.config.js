@@ -5,7 +5,7 @@ const { join } = require('path');
 /** @type {()=>import('server-file-sync/dist/config/TConfig').TConfig} */
 module.exports = async function () {
   //等一会儿
-  console.log('异步加载配置...');
+  console.log('异步加载配置sfs-v1.config.js...');
   await new Promise((r, e) => {
     setTimeout(() => {
       r();
@@ -20,8 +20,6 @@ module.exports = async function () {
     username: 'root',
     /** 私钥字符串 */
     privateKey: readFileSync(join(__dirname, './.ssh/asdf')),
-    /** 私钥密码 */
-    passphrase: '',
     /** 同步列表 */
     syncList: [
       {
@@ -33,8 +31,6 @@ module.exports = async function () {
         username: 'root',
         /** 私钥字符串 */
         privateKey: readFileSync(join(__dirname, './.ssh/asdf')),
-        /** 私钥密码 */
-        passphrase: '',
         //
         key: 'hh',
         title: '测试项目',

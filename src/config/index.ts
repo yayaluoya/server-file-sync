@@ -30,8 +30,6 @@ export function getDefConfig(): TConfig {
     host: '',
     port: 22,
     username: 'root',
-    passphrase: '',
-    privateKey: '',
     syncList: [],
     connectConfig: {},
     watch: false,
@@ -68,11 +66,11 @@ export function getProjectDefConfig() {
  */
 export function getConnectConfig(obj: TConnectConfig & Record<string, any>) {
   let o: TConnectConfig = {};
-  typeof obj.host != 'undefined' && (o.host = obj.host);
-  typeof obj.port != 'undefined' && (o.port = obj.port);
-  typeof obj.username != 'undefined' && (o.username = obj.username);
-  typeof obj.passphrase != 'undefined' && (o.passphrase = obj.passphrase);
-  typeof obj.privateKey != 'undefined' && (o.privateKey = obj.privateKey);
+  'host' in obj && (o.host = obj.host);
+  'port' in obj && (o.port = obj.port);
+  'username' in obj && (o.username = obj.username);
+  'passphrase' in obj && (o.passphrase = obj.passphrase);
+  'privateKey' in obj && (o.privateKey = obj.privateKey);
   return o;
 }
 

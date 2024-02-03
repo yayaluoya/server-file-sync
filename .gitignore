@@ -3,4 +3,5 @@ node_modules
 package-lock.json
 /dist
 
-/test/.ssh
+/test/.ssh/*
+!/test/.ssh/.keep
